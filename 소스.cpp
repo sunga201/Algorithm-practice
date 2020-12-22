@@ -27133,6 +27133,27 @@ int main() {
 		}
 	}
 }*/
+
+int main() {
+	int i, j, n, arr[50];
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+
+	int ret = -1;
+	for (i = 0; i < n; i++) {
+		int val = arr[i], cnt=0, tmpMaxa=0;
+		for (i = 10; i >= 0; i--) {
+			cout << (double)(arr[11] - arr[i]) / (k - i) << " ";
+		}
+		cout << endl;
+		for (i = 12; i < n; i++) {
+			cout << (double)(arr[11] - arr[i]) / (i - k) << " ";
+		}
+	}
+
+}
 ////////////////////////////////////////
 	/*삼성 SW 역량 테스트 기출 문제*/
 ////////////////////////////////////////
