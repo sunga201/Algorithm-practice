@@ -8443,14 +8443,15 @@ int main() {
 	printf("%d", ret);
 }*/
 
-/*const int MAX = 999999999; //3954 Brainf**k 인터프리터
+/*int ed[4096][256]; // 3954 Brainf**k 인터프리터
+const int MAX = 999999999;
 int main() {
-	int i, t, sm, sc, si;
+	int i, j, k, t, sm, sc, si;
 	scanf("%d", &t);
 	while (t--) {
-		int arr[100000], arrPnt=0, inputPnt=0;
+		int arr[100000], arrPnt = 0, inputPnt = 0;
 		char com[4096], input[4096];
-		int brac[4096], excuted[4096];
+		int brac[4096]; // brac : [또는 ]에 기록, 짝을 이루는 다른 괄호의 idx 저장
 		scanf("%d%d%d", &sm, &sc, &si);
 		fill(arr, arr + sm, 0);
 		scanf("%s", com);
@@ -8466,16 +8467,20 @@ int main() {
 				stk.pop();
 			}
 			else brac[i] = 0;
-			excuted[i] = 0;
 		}
 
-		int ex=0, curBrac=-1;
+		stack<int> enterVal;
+		memset(ed, 0, sizeof(ed));
+		int ex = 0, curBrac = MAX;
 		for (i = 0; i < sc; i++) {
-			if (ex>=50000000) {
-				for (int j = 0; j < sc; j++) {
-					if (com[j] == '[' && j <= i && i <= brac[j] && excuted[j]==0) {
-						curBrac = j;
+			if (ex >= 50000000) {
+				for (j = 0; j < sc; j++) {
+					for (k = 0; k < 256; k++) {
+						if (com[j] == '[' && j <= i && i <= brac[j] && ed[j][k] == 1) {
+							curBrac = j;
+						}
 					}
+					if (k != 256) break;
 				}
 				printf("Loops %d %d\n", curBrac, brac[curBrac]);
 				break;
@@ -8491,22 +8496,28 @@ int main() {
 				break;
 			case '<':
 				arrPnt--;
-				if (arrPnt < 0) arrPnt = sm-1;
+				if (arrPnt < 0) arrPnt = sm - 1;
 				break;
 			case '>':
 				arrPnt++;
-				if (arrPnt > sm-1) arrPnt = 0;
+				if (arrPnt > sm - 1) arrPnt = 0;
 				break;
 			case '[':
-				if (arr[arrPnt] == 0) i = brac[i];
+				if (ed[i][arr[arrPnt]] == 0) {
+					ed[i][arr[arrPnt]] = 1;
+					enterVal.push(arr[arrPnt]);
+				}
+				if (arr[arrPnt] == 0) i = brac[i] - 1;
 				break;
 			case ']':
 				if (arr[arrPnt] != 0) {
-					i = brac[i];	
+					i = brac[i] - 1;
 				}
 				else {
-					excuted[i] = 1;
-					excuted[brac[i]] = 1;
+					if (ed[brac[i]][enterVal.top()] == 1) {
+						ed[brac[i]][enterVal.top()] = 2;
+						enterVal.pop();
+					}
 				}
 				break;
 			case '.':
@@ -18466,42 +18477,71 @@ int main() {
 	}
 }*/
 
-/*typedef long long ll; // 1637 날카로운 눈
-
-int func(int a, int b, int c) { //a : start,  b : end,  c : interval
-	if (a > b) return 0;
-	return (b - a) / c + 1;
-}
-
+/*typedef long long ll; //1637 날카로운 눈
+const ll MIN = -1e12;
+ll arr[20000][3];
 int main() {
-	int i, n;
-	ll arr[20000][3];
-	scanf("%d", &n);
+	int i, j, n;
+	cin >> n;
+	ll maxa = MIN;
 	for (i = 0; i < n; i++) {
-		scanf("%lld%lld%lld", &arr[i][0], &arr[i][1], &arr[i][2]);
+		for (j = 0; j < 3; j++) cin >> arr[i][j];
+		maxa = max(maxa, arr[i][1]);
 	}
-
-	ll l = 1, r = ((ll)1 << 31) - 1, mid, ret=-1;
-	while (l <= r) {
-		mid = l + r >> 1;
+	ll lo = 0, hi = maxa, mid;
+	bool chk = false;
+	while (lo + 1 < hi) {
+		mid = (lo + hi + 1) >> 1;
 		ll sum = 0;
 		for (i = 0; i < n; i++) {
-			sum += func(arr[i][0], min(mid, arr[i][1]), arr[i][2]);
+			if (arr[i][0] <= mid) {
+				int tmp = min(mid, arr[i][1]);
+				sum += (tmp - arr[i][0]) / arr[i][2] + 1;
+			}
 		}
-		if (sum && sum % 2 == 0) l = mid + 1;
-		else {
-			if(mid) ret = mid;
-			r = mid - 1;
+		if (sum % 2) { // 홀수
+			hi = mid;
+			if (mid == 2) {
+				sum = 0;
+				for (i = 0; i < n; i++) {
+					if (arr[i][0] <= 2) {
+						int tmp = min(2LL, arr[i][1]);
+						sum += (tmp - arr[i][0]) / arr[i][2] + 1;
+					}
+				}
+				if (sum % 2) {
+					hi = 1;
+				}
+				else chk = 1;
+				break;
+			}
+		}
+		else { //짝수
+			lo = mid;
+			if (lo == maxa - 1) {
+				sum = 0;
+				for (i = 0; i < n; i++) {
+					if (arr[i][0] <= maxa) {
+						int tmp = min(maxa, arr[i][1]);
+						sum += (tmp - arr[i][0]) / arr[i][2] + 1;
+					}
+				}
+				if (sum % 2) {
+					hi = maxa;
+				}
+				else chk = 1;
+				break;
+			}
 		}
 	}
-	if (ret==-1) printf("NOTHING");
-	else {
+
+	if (chk) cout << "NOTHING\n"; //홀수 개의 정수 없음
+	else { //홀수 개의 정수 존재
 		ll num = 0;
 		for (i = 0; i < n; i++) {
-			if (ret < arr[i][0] || ret > arr[i][1]) continue;
-			if (!((ret - arr[i][0]) % arr[i][2])) num++;
+			if (hi>=arr[i][0] && hi <= arr[i][1] && (hi - arr[i][0]) % arr[i][2] == 0) num++;
 		}
-		printf("%lld %lld", ret, num);
+		cout << hi << " " << num;
 	}
 }*/
 
@@ -25344,7 +25384,7 @@ int main() {
 		cout << result[i] << " ";
 }*/
 
-const int MAX = 20001;
+/*const int MAX = 20001; //2007 가위바위보
 vector<int> adj[MAX];
 int dfsn[MAX], finished[MAX], sn[MAX], cnt = 1, SN = 1;
 stack<int> stk;
@@ -25396,7 +25436,1703 @@ int main() {
 		}
 	}
 	cout << "^_^\n";
+}*/
+
+/*const int MAX = 52, START = 0, END = 25; // 6086 Total Flow(간선 구조체 버전)
+
+typedef struct edge {
+	int to, c, f;
+	edge *dual;
+	edge() : edge(-1, 0) {}
+	edge(int to1, int c1) : to(to1), c(c1), f(0), dual(NULL) {}
+	int spare() {
+		return c - f;
+	}
+	void addFlow(int flow) {
+		f+=flow;
+		(dual->f)-=flow;
+	}
+}Edge;
+vector<Edge*> adj[MAX];
+int cToI(char c) { // char to int
+	if (c <= 'Z') return c - 'A';
+	else return c - 'a' + 26;
 }
+
+int main() {
+	int n, i, capacity;
+	char a, b;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> a >> b >> capacity;
+		int aNum = cToI(a), bNum = cToI(b);
+		Edge* to = new Edge(bNum, capacity);
+		Edge* prev = new Edge(aNum, capacity);
+		to->dual = prev;
+		prev->dual = to;
+		adj[aNum].push_back(to);
+		adj[bNum].push_back(prev);
+	}
+
+	int ret = 0;
+	while (1) {
+		queue<int> que;
+		int prev[MAX]; //증가경로 저장용 배열
+		Edge* path[MAX] = { nullptr };
+		memset(prev, -1, sizeof(prev)); //-1로 초기화
+		que.push(START);
+		prev[START] = START;
+		while (!que.empty() && prev[END] == -1) {
+			int here = que.front();
+			que.pop();
+			for (auto e : adj[here]) {
+				int next = e->to;
+				if (e->spare() > 0 && prev[next] == -1) {
+					que.push(next);
+					prev[next] = here;
+					path[next] = e;
+					if (next == END) break;
+				}
+			}
+		}
+		if (prev[END] == -1) break; //더이상 증가경로가 없음. 끝
+		int mina = 1e9;
+		for (i = END; i != START; i = prev[i]) {
+			mina = min(mina, path[i]->spare());
+		}
+
+		for (i = END; i != START; i = prev[i]) {
+			path[i]->addFlow(mina);
+		}
+		ret += mina;
+	}
+	cout << ret;
+}*/
+
+/*const int MAX = 403; //2188 축사 배정
+vector<int> adj[MAX];
+int f[MAX][MAX], c[MAX][MAX];
+
+int main() {
+	int n, m, i, j, s, cage, ret = 0;
+	cin >> n >> m; 
+	int start = 1, end = n + m + 2;
+	for (i = 1; i <= n; i++) {
+		cin >> s;
+		int cow = i + 1;
+		for (j = 0; j < s; j++) {
+			cin >> cage;
+			cage += n + 1;
+			adj[cow].push_back(cage);
+			adj[cage].push_back(cow);
+			c[cow][cage]=1;
+			adj[cage].push_back(end);
+			adj[end].push_back(cage);
+			c[cage][end]=1;
+		}
+		adj[start].push_back(cow);
+		adj[cow].push_back(start);
+		c[start][cow]=1;
+	}
+
+	while (1) {
+		int prev[MAX];
+		fill(prev, prev + MAX, -1);
+		queue<int> que;
+		que.push(start);
+		while (!que.empty() && prev[end] == -1) {
+			int t = que.front();
+			que.pop();
+			for (auto next : adj[t]) {
+				if (prev[next] == -1 && c[t][next] - f[t][next] > 0) {
+					prev[next] = t;
+					que.push(next);
+					if (next == end) break;
+				}
+			}
+		}
+		if (prev[end] == -1) break;
+
+		int mina = 1e9;
+		for (i = end; i != start; i = prev[i]) {
+			mina = min(mina, c[prev[i]][i] - f[prev[i]][i]);
+		}
+
+		for (i = end; i != start; i = prev[i]) {
+			f[prev[i]][i] += mina;
+			f[i][prev[i]] -= mina;
+		}
+		ret += mina;
+	}
+	cout << ret;
+}*/
+
+/*const int MAX = 201; //2188 축사 배정 (이분 그래프용 알고리즘)
+vector<int> adj[MAX];
+int A[MAX], B[MAX], visited[MAX];
+
+bool dfs(int here) {
+	visited[here] = 1;
+	for (auto it : adj[here]) {
+		if (B[it] == -1 || (!visited[B[it]] && dfs(B[it]))) {
+			A[here] = it;
+			B[it] = here;
+			return true;
+		}
+	}
+	return false;
+}
+int main() {
+	int n, m, i, j, s, a;
+	cin >> n >> m;
+	for (i = 1; i <= n; i++) {
+		cin >> s;
+		for (j = 0; j < s; j++) {
+			cin >> a;
+			adj[i].push_back(a);
+		}
+	}
+
+	int ret = 0;
+	fill(A, A + MAX, -1);
+	fill(B, B + MAX, -1);
+	for (i = 1; i <= n; i++) {
+		if (A[i] == -1) {
+			fill(visited, visited + MAX, 0);
+			if (dfs(i)) ret++;
+		}
+	}
+	cout << ret;
+}*/
+/*const int MAX = 802; 
+
+vector<int> adj[MAX];
+int f[MAX][MAX], c[MAX][MAX];
+int main() {
+	int n, p, i, a, b, s=2, e=3;
+	cin >> n >> p;
+	for (i = 1; i <= n; i++) {
+		int x = 2 * i - 1, y = 2 * i;
+		adj[x].push_back(y);
+		adj[y].push_back(x);
+		c[x][y] = 1;
+	}
+	for (i = 0; i < p; i++) {
+		cin >> a >> b;
+		int from = a * 2, to = b * 2 - 1;
+		adj[from].push_back(to);
+		adj[to+1].push_back(from-1);
+		c[from][to] = 1;
+		c[to+1][from-1] = 1;
+	}
+
+	int ret = 0;
+	while (1) {
+		int prev[MAX];
+		fill(prev, prev + MAX, -1);
+		queue<int> que;
+		que.push(s);
+		while (!que.empty() && prev[e] == -1) {
+			int here = que.front();
+			que.pop();
+			for (auto next : adj[here]) {
+				if (c[here][next] - f[here][next] > 0 && prev[next] == -1) {
+					que.push(next);
+					prev[next] = here;
+					if (next == e) break;
+				}
+			}
+		}
+
+		if (prev[e] == -1) break;
+
+		int mina = 1e9;
+		for (i = e; i != s; i = prev[i]) {
+			mina = min(mina, c[prev[i]][i] - f[prev[i]][i]);
+		}
+
+		for (i = e; i != s; i = prev[i]) {
+			f[prev[i]][i] += mina;
+			f[i][prev[i]] -= mina;
+		}
+
+		ret += mina;
+	}
+	cout << ret;
+}*/
+
+/*const int MAX = 1001; // 9576 책 나눠주기
+
+vector<int> adj[MAX];
+int visited[MAX], A[MAX], B[MAX];
+
+bool dfs(int here) {
+	visited[here] = true;
+	for (auto next : adj[here]) {
+		if (B[next] == -1 || (!visited[B[next]] && dfs(B[next]))) {
+			A[here] = next;
+			B[next] = here;
+			return true;
+		}
+	}
+	return false;
+}
+
+int main() {
+	int t;
+	cin >> t;
+	while (t--) {
+		int n, m, i, j, a, b;
+		cin >> n >> m;
+		for (i = 1; i <= m; i++) {
+			cin >> a >> b;
+			for (j = a; j <= b; j++) adj[i].push_back(j);
+		}
+		int ret = 0;
+		fill(A, A + m + 1, -1);
+		fill(B, B + n + 1, -1);
+		for (i = 1; i <= m; i++) {
+			if (A[i]==-1) {
+				fill(visited, visited + m + 1, -1);
+				if (dfs(i)) ret++;
+			}
+		}
+		cout << ret << "\n";
+		for (i = 1; i <= m; i++) adj[i].clear();
+	}
+	
+}*/
+
+/*const int MAX = 20000; // 1420 학교 가지마! (실패)
+char board[100][100];
+map<pair<int, int>, int > c, f;
+vector<int> adj[MAX];
+int nxt[4][2] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+
+int main() {
+	int n, m, i, j, k, s = 0, e = 0, sx, sy, ex, ey;
+	char ch;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin.get();
+		for (j = 0; j < m; j++) {
+			cin >> board[i][j];
+			if (board[i][j] == 'K') {
+				sx = i;
+				sy = j;
+				s = 2 * (i * m + j) + 1;
+			}
+			if (board[i][j] == 'H') {
+				ex = i;
+				ey = j;
+				e = 2 * (i * m + j);
+			}
+		}
+	}
+
+	if ((n == 1 && m == 1) || abs(ex - sx) + abs(ey - sy) == 1) { //도현이와 학교가 딱 붙어있을 때
+		cout << -1;
+		return 0;
+	}
+	for (i = 0; i < n * m; i++) {
+		int a = i * 2, b = a + 1;
+		adj[a].push_back(b);
+		adj[b].push_back(a);
+		c[{a, b}] = 1;
+		c[{b, a}] = 0;
+	}
+
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++) {
+			ch = board[i][j];
+			int here = 2 * (i * m + j);
+			if (ch != '#') {
+				for (k = 0; k < 4; k++) {
+					int nx = i + nxt[k][0], ny = j + nxt[k][1];
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+					if (board[nx][ny] != '#') {
+						int next = 2 * (nx * m + ny);
+						adj[here + 1].push_back(next);
+						adj[next + 1].push_back(here);
+						c[{here + 1, next}] = 1;
+					}
+				}
+			}
+		}
+	}
+
+	int ret = 0;
+	while (1) {
+		int prev[MAX];
+		queue<int> que;
+		que.push(s);
+		fill(prev, prev + MAX, -1);
+		while (!que.empty() && prev[e] == -1) {
+			int here = que.front();
+			que.pop();
+			for (auto next : adj[here]) {
+				if (prev[next] == -1 && c[{here, next}] - f[{here, next}] > 0) {
+					prev[next] = here;
+					que.push(next);
+					if (next == e) break;
+				}
+			}
+		}
+		if (prev[e] == -1) break;
+
+		for (i = e; i != s; i = prev[i]) {
+			f[{prev[i], i}]++;
+			f[{i, prev[i]}]--;
+		}
+		ret++;
+	}
+	cout << ret;
+}*/
+
+/*typedef struct edge { // 1420 학교 가지마! (실패)
+	int to, c, f;
+	edge* dual;
+	edge(int to1, int c1) : to(to1), c(c1), f(0), dual(nullptr) {}
+	int remain() {
+		return c - f;
+	}
+
+	void setFlow(int flow) {
+		f += flow;
+		dual->f -= flow;
+	}
+}Edge;
+
+const int MAX = 20000;
+char board[100][100];
+vector<Edge *> ed[MAX];
+int nxt[4][2] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+
+int main() {
+	int n, m, i, j, k, s=0, e=0, sx, sy, ex, ey;
+	char ch;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin.get();
+		for (j = 0; j < m; j++) {
+			cin >> board[i][j];
+			if (board[i][j] == 'K') {
+				sx = i;
+				sy = j;
+				s = 2 * (i * m + j) + 1;
+			}
+			if (board[i][j] == 'H') {
+				ex = i;
+				ey = j;
+				e = 2 * (i * m + j);
+			}
+		}
+	}
+
+	if ((n==1&&m==1)||abs(ex-sx) +abs(ey-sy)==1) { //도현이와 학교가 딱 붙어있을 때
+		cout << -1;
+		return 0;
+	}
+	for (i = 0; i < n * m; i++) {
+		int a = i * 2, b = a + 1;
+		Edge* e1 = new Edge(b, 1), *e2 = new Edge(a, 0);
+		e1->dual = e2;
+		e2->dual = e1;
+		ed[a].push_back(e1);
+		ed[b].push_back(e2);
+	}
+
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++) {
+			ch = board[i][j];
+			int here = 2 * (i * m + j);
+			if (ch != '#') {
+				for (k = 0; k < 4; k++) {
+					int nx = i + nxt[k][0], ny = j + nxt[k][1];
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+					if (board[nx][ny] != '#') {
+						int next = 2 * (nx * m + ny);
+						Edge* e1 = new Edge(next, 1), * e2 = new Edge(here, 0);
+						e1->dual = e2;
+						e2->dual = e1;
+						ed[here + 1].push_back(e1);
+						ed[next + 1].push_back(e2);
+					}
+				}
+			}
+		}
+	}
+
+	int ret = 0;
+	while (1) {
+		int prev[MAX];
+		queue<int> que;
+		que.push(s);
+		Edge* path[MAX] = { 0, };
+		fill(prev, prev + MAX, -1);
+		while (!que.empty() && prev[e] == -1) {
+			int here = que.front();
+			que.pop();
+			for (auto next : ed[here]) {
+				int to = next->to;	
+				if (next->remain() > 0 && prev[to] == -1) {
+					que.push(to);
+					prev[to] = here;
+					path[to] = next;
+					if (to == e) break;
+				}
+			}
+		}
+
+		if (prev[e] == -1) break;
+
+		for (i = e; i != s; i = prev[i]) {
+			path[i]->setFlow(1);
+		}
+		ret++;
+	}
+	cout << ret;
+}*/
+
+/*const int MAX = 202, INF = 1e9; // 11405 책 구매하기 (MCMF)
+vector<int> adj[MAX];
+int d[MAX][MAX], f[MAX][MAX], c[MAX][MAX]; //d : 비용, f : 유량, c : 용량
+int main() {
+	// 0 : 시작점, n + m + 1: 끝점
+	int n, m, i, j, a, b;
+	cin >> n >> m;
+	int s = 0, e = n + m + 1;
+	for (i = m+1; i <= m + n; i++) {
+		cin >> a;
+		adj[i].push_back(e);
+		adj[e].push_back(i);
+		c[i][e] = a; // people -> sink capability, a
+	}
+
+	for (i = 1; i <= m; i++) {
+		cin >> b;
+		adj[i].push_back(s);
+		adj[s].push_back(i);
+		c[s][i] = b; //source -> book capability, b
+	}
+
+	for (i = 1; i <= m; i++) {
+		for (j = m + 1; j <= m + n; j++) {
+			cin>>d[i][j];
+			d[j][i] = -d[i][j];
+			adj[i].push_back(j);
+			adj[j].push_back(i);
+			c[i][j] = INF; //자유롭게 이동 가능
+		}
+	}
+
+	int ret = 0;
+	while (1) {
+		int prev[MAX], dist[MAX];
+		bool inQueue[MAX] = { 0, };
+		fill(prev, prev + MAX, -1);
+		for (i = 1; i < MAX; i++) {
+			dist[i] = INF;
+		}
+		queue<int> que;
+		que.push(s);
+		dist[s] = 0;
+		while (!que.empty()) {
+			int now = que.front();
+			que.pop();
+			inQueue[now] = false;
+			for (auto next : adj[now]) {
+				if (c[now][next] - f[now][next] > 0 && dist[now] + d[now][next] < dist[next]) {
+					dist[next] = dist[now] + d[now][next];
+					prev[next] = now;
+					if (!inQueue[next]) {
+						inQueue[next] = true;
+						que.push(next);
+					}
+				}
+			}
+		}
+		if (prev[e] == -1) break;
+
+		int mina = INF;
+		for (i = e; i != s; i = prev[i]) {
+			mina = min(mina, c[prev[i]][i] - f[prev[i]][i]);
+		}
+		for (i = e; i != s; i = prev[i]) {
+			ret += mina * d[prev[i]][i];
+			f[prev[i]][i] += mina;
+			f[i][prev[i]] -= mina;
+		}
+	}
+	cout << ret;
+}*/
+
+/*const int MAX = 802, INF=1e9; //11408, 11409 열혈강호 5, 6
+vector<int> adj[MAX];
+int d[MAX][MAX], f[MAX][MAX], c[MAX][MAX]; // d : 비용 f : 유량 c : 용량
+int main() {
+	int n, m, i, j, num, a, b;
+	cin >> n >> m;
+	int s = 0, e = n + m + 1;
+	for (i = 1; i <= n; i++) {
+		adj[s].push_back(i);
+		adj[i].push_back(s);
+		c[s][i] = 1;
+	}
+
+	for (i = n + 1; i <= n + m; i++) {
+		adj[i].push_back(e);
+		adj[e].push_back(i);
+		c[i][e] = 1;
+	}
+	for (i = 1; i <= n; i++) {
+		cin >> num;
+		for (j = 0; j < num; j++) {
+			cin >> a >> b;
+			adj[i].push_back(a + n);
+			adj[a + n].push_back(i);
+			d[i][a + n] = -b;
+			d[a + n][i] = b;
+			c[i][a + n] = 1;
+		}
+	}
+
+	int cnt =0, ret = 0;
+	while (1) {
+		int prev[MAX], inQueue[MAX], dist[MAX];
+		for (i = 0; i < MAX; i++) {
+			prev[i] = -1;
+			inQueue[i] = 0;
+			dist[i] = INF;
+		}
+		dist[s] = 0;
+		queue<int> que;
+		que.push(s);
+		while (!que.empty()) {
+			int here = que.front();
+			que.pop();
+			inQueue[here] = 0;
+			for (auto next : adj[here]) {
+				if (c[here][next] - f[here][next] > 0 && dist[here] + d[here][next] < dist[next]) {
+					dist[next] = dist[here] + d[here][next];
+					prev[next] = here;
+					if (!inQueue[next]) {
+						inQueue[next]=1;
+						que.push(next);
+					}
+				}
+			}
+		}
+
+		if (prev[e] == -1) break;
+		int flow = INF;
+		for (i = e; i != s; i = prev[i]) {
+			flow = min(flow, c[prev[i]][i] - f[prev[i]][i]);
+		}
+
+		for (i = e; i != s; i = prev[i]) {
+			ret += d[prev[i]][i];
+			f[prev[i]][i]++;
+			f[i][prev[i]]--;
+		}
+		cnt++;
+	}
+	cout << cnt << "\n";
+	cout << -ret << "\n";
+}*/
+
+/*const int MAX = 1e5 + 1, POWMAX=17; // LCA 빠른 버전
+vector<int> adj[MAX];
+int depth[MAX], parent[MAX][POWMAX];
+void dfs(int here) {
+	for (auto it : adj[here]) {
+		if (!depth[it]) {
+			depth[it] = depth[here] + 1;
+			parent[it][0] = here;
+			dfs(it);
+		}
+	}
+}
+int main() {
+	int n, m, a, b, i, j;
+	cin >> n;
+	for (i = 0; i < n-1; i++) {
+		cin >> a >> b;
+		adj[a].push_back(b);
+		adj[b].push_back(a);
+	}
+	depth[1] = 1;
+	parent[1][0] = 1;
+	dfs(1);
+
+	for (j = 0; j < POWMAX - 1; j++) {
+		for (i = 1; i <= n; i++) {
+			if(parent[i][j]!=0) parent[i][j + 1] = parent[parent[i][j]][j];
+		}
+	}
+
+	cin >> m;
+	for (i = 0; i < m; i++) {
+		cin >> a >> b;
+		if (depth[a] < depth[b]) swap(a, b);
+		int diff = depth[a] - depth[b];
+		for (j = 0; diff; j++) {
+			if (diff % 2) a = parent[a][j];
+			diff/=2;
+		}
+		if (a != b) {
+			for (j = POWMAX; j >= 0; j--) {
+				if (depth[a]>(int)pow(2, j) && parent[a][j] != parent[b][j]) {
+					a = parent[a][j];
+					b = parent[b][j];
+				}
+			}
+			a = parent[a][0];
+		}
+		cout << a << "\n";
+	}
+}*/
+
+/*typedef long long ll; //lazy propagation
+const int MAX = 1e6 + 1;
+typedef struct tree {
+	ll val;
+	ll lazy;
+	tree() : val(0), lazy(0) {}
+}Tree;
+
+ll arr[MAX];
+Tree treeStruct[4 * MAX + 1];
+
+ll init(int s, int e, int node) {
+	if (s == e) {
+		return treeStruct[node].val = arr[s];
+	}
+	int mid = s + e >> 1;
+	return treeStruct[node].val = init(s, mid, node * 2) + init(mid + 1, e, node * 2 + 1);
+}
+
+void propagate(int l, int r, int node) {
+	treeStruct[node].val += ((ll)r - l + 1) * treeStruct[node].lazy;
+	if (l != r) {
+		treeStruct[node * 2].lazy += treeStruct[node].lazy;
+		treeStruct[node * 2 + 1].lazy += treeStruct[node].lazy;
+	}
+	treeStruct[node].lazy = 0;
+}
+
+void update(int l, int r, int s, int e, int node, ll diff) { //l, r : 트리 범위, s, e : 쿼리 범위
+	if (treeStruct[node].lazy) propagate(l, r, node);
+	if (s <= l && r <= e) {
+		treeStruct[node].val += ((ll)r-l+1) * diff;
+		if (l != r) {
+			treeStruct[node * 2].lazy += diff;
+			treeStruct[node * 2 + 1].lazy += diff;
+		}
+		return;
+	}
+	if (r<s || l>e) return;
+	int mid = l + r >> 1;
+	update(l, mid, s, e, node * 2, diff);
+	update(mid + 1, r, s, e, node * 2 + 1, diff);
+	treeStruct[node].val = treeStruct[node * 2].val + treeStruct[node * 2 + 1].val;
+}
+
+int getSum(int l, int r, int s, int e, int node) { //node : 노드 번호, l~r : 트리에서 번호 node가 담당하는 범위
+	if (treeStruct[node].lazy) propagate(l, r, node);
+	if (s <= l && e >= r) {
+		return treeStruct[node].val;
+	}
+	if (r<s || l>e) return 0;
+	int mid = l + r >> 1;
+	return getSum(l, mid, s, e, node * 2) + getSum(mid + 1, r, s, e, node * 2 + 1);
+}
+
+int main() {
+	int n, m, k, i, num, a, b;
+	ll c;
+	cin >> n >> m >> k;
+	for (i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+	init(0, n - 1, 1);
+
+	for (i = 0; i < m+k; i++) {
+		cin >> num;
+		if (num == 1) { //update
+			cin >> a >> b >> c;
+			update(0, n - 1, a-1, b-1, 1, c);
+		}
+		else { //sum
+			cin >> a >> b;
+			cout<<getSum(0, n - 1, a-1, b-1, 1)<<"\n";
+		}
+	}
+}*/
+	
+/*const int MAX = 500000; // 12844 XOR
+typedef struct tree {
+	int val;
+	int lazy;
+}Tree;
+
+int arr[MAX];
+Tree t[4 * MAX + 1];
+
+int init(int start, int end, int node) {
+	if (start == end) return t[node].val = arr[start];
+	int mid = start + end >> 1;
+	return t[node].val = init(start, mid, node * 2) ^ init(mid + 1, end, node * 2 + 1);
+}
+
+void propagate(int l, int r, int node) {
+	if((r-l+1)%2==1) t[node].val ^= t[node].lazy;
+	if (l != r) {
+		t[node * 2].lazy ^= t[node].lazy;
+		t[node * 2 + 1].lazy ^= t[node].lazy;
+	}
+	t[node].lazy = 0;
+}
+
+void update(int start, int end, int l, int r, int node, int diff) {
+	if (t[node].lazy) propagate(start, end, node);
+	if (l <= start && r >= end) {
+		t[node].lazy ^= diff;
+		propagate(start, end, node);
+		return;
+	}
+	if (end<l || start>r) return;
+	int mid = start + end >> 1;
+	update(start, mid, l, r, node * 2, diff);
+	update(mid + 1, end, l, r, node * 2 + 1, diff);
+	t[node].val = t[node * 2].val ^ t[node * 2 + 1].val;
+}
+
+int find(int start, int end, int l, int r, int node) {
+	if (t[node].lazy) propagate(start, end, node);
+	if (l <= start && r >= end) return t[node].val;
+	if (start > r || end < l) return 0;
+	int mid = start + end >> 1;
+	return find(start, mid, l, r, node * 2) ^ find(mid + 1, end, l, r, node * 2 + 1);
+}
+
+int main() {
+	int n, m, i, num, a, b, c;
+	cin >> n;
+	for (i = 0; i < n; i++) cin >> arr[i];
+	init(0, n - 1, 1);
+	cin >> m;
+	for (i = 0; i < m; i++) {
+		cin >> num;
+		if (num == 1) {
+			cin >> a >> b >> c;
+			if (a > b) swap(a, b);
+			update(0, n - 1, a, b, 1, c);
+		}
+		else {
+			cin >> a >> b;
+			if (a > b) swap(a, b);
+			cout << find(0, n - 1, a, b, 1) << "\n";
+		}
+	}
+}*/
+
+/*int main() { // 2170 선 긋기
+	int n, i, a, b;
+	vector<pair<int, int>> vec;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> a >> b;
+		vec.emplace_back(a, b);
+	}
+	sort(vec.begin(), vec.end());
+	int left = vec[0].first, right = vec[0].second, ret = right - left;
+	for (i = 1; i < n; i++) {
+		int s = vec[i].first, e = vec[i].second;
+		if (left <= s && e <= right) continue;
+		if (right < s) {
+			left = s, right = e;
+			ret += right - left;
+			continue;
+		}
+		if (e > right) {
+			ret += e - right;
+			right = e;
+		}
+	}
+	cout << ret;
+}*/
+
+/*const int MAX = 1e6; //KMP
+int fail[MAX];
+int main() {
+	int i, j;
+	string t, p;
+	getline(cin, t);
+	getline(cin, p);
+	int tLen = t.length(), pLen = p.length();
+	for (i = 1, j = 0; i < tLen; i++) {
+		while (j > 0 && t[i] != p[j]) j = fail[j - 1];
+		if (t[i] == p[j]) fail[i] = ++j;
+	}
+
+	vector<int> ret;
+	for (i = 0, j = 0; i < tLen; i++) {
+		while (j > 0 && t[i] != p[j]) j = fail[j - 1];
+		if (t[i] == p[j]) {
+			if (j == pLen - 1) {
+				ret.push_back(i - pLen + 2);
+				j = fail[j];
+			}
+			else j++;
+		}
+	}
+
+	cout << ret.size() << "\n";
+	for (auto it : ret) {
+		cout << it << " ";
+	}
+}*/
+
+/*const int MAX = 200001, MOD = 1e5 + 7; // 3033 가장 긴 문자열
+
+int mod(long long n) {
+	if (n >= 0) return n % MOD;
+	else return (n + (-n / MOD + 1) * MOD) % MOD;
+}
+int main() {
+	int len, i, j;
+	string s;
+	cin >> len >> s;
+	int lo = 0, hi = 1e9, mid;
+	while (lo + 1 < hi) {
+		mid = lo + hi >> 1;
+		int hash = 0, found = 0;
+		long long power = 1;
+		vector<int> bucket[MOD];
+		for (i = 0; i <= len - mid; i++) {
+			if (i == 0) {
+				for (j = 0; j < mid; j++) {
+					hash = mod(hash + 1LL * s[mid - 1 - j] * power);
+					if (j < mid - 1) power = mod(power * 2);
+				}
+			}
+			else {
+				hash = mod(2 * 1LL * (hash - s[i - 1] * power) + s[i + mid - 1]);
+			}
+			if (!bucket[hash].empty()) {
+				for (auto p : bucket[hash]) {
+					bool same = true;
+					for (j = 0; j < mid; j++) {
+						if (s[p + j] != s[i + j]) {
+							same = false;
+							break;
+						}
+					}
+
+					if (same) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if (found) break;
+			else bucket[hash].push_back(i);
+		}
+		if (found) lo = mid;
+		else hi = mid;
+	}
+	cout << lo;
+}*/
+
+/*const int MOD = 1000; //행렬곱
+typedef long long ll;
+typedef vector<vector<int>> matrix;
+
+matrix A;
+int n;
+
+matrix mul(matrix m1, matrix m2) {
+	matrix ret(n);
+	int i, j, k;
+	for (i = 0; i < n; i++) {
+		ret[i].resize(n);
+		for (j = 0; j < n; j++) {
+			int sum = 0;
+			for (k = 0; k < n; k++) {
+				sum += m1[i][k] * m2[k][j];
+			}
+			ret[i][j] = sum % MOD;
+		}
+	}
+	return ret;
+}
+
+matrix f(matrix M, long long num) {
+	if (num == 1) return M;
+	matrix tmp = f(M, num / 2);
+	if (num % 2) return mul(M, mul(tmp, tmp));
+	else return mul(tmp, tmp);
+}
+int main() {
+	int i, j;
+	ll b;
+	cin >> n >> b;
+	A.resize(n);
+	for (i = 0; i < n; i++) {
+		A[i].resize(n);
+		for (j = 0; j < n; j++) {
+			cin >> A[i][j];
+		}
+	}
+	
+	matrix ret = f(A, b);
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			cout << ret[i][j] % MOD << " ";
+		}
+		cout << "\n";
+	}
+}*/
+
+/*const int MOD = 1e9 + 7; //14289 본대 산책 3
+typedef long long ll;
+typedef vector<vector<ll>> matrix;
+
+matrix mul(matrix m1, matrix m2) {
+	matrix ret;
+	int i, j, k, row = m1.size(), col = m1[0].size();
+	ret.resize(row);
+	for (i = 0; i < row; i++) {
+		ret[i].resize(col);
+		for (j = 0; j < col; j++) {
+			ll sum = 0;
+			for (k = 0; k < col; k++) {
+				sum += m1[i][k] * m2[k][j];
+				sum %= MOD;
+			}
+			ret[i][j] = sum % MOD;
+		}
+	}
+	return ret;
+}
+
+matrix f(matrix m, int n) {
+	if (n == 1) return m;
+	matrix tmp = f(m, n / 2);
+	if (n % 2) return mul(m, mul(tmp, tmp));
+	else return mul(tmp, tmp);
+}
+
+int main() {
+	int n, m, i, j, a, b, r;
+	cin >> n >> m;
+	matrix A(n);
+	for (i = 0; i < n; i++) {
+		A[i].resize(n);
+		fill(A[i].begin(), A[i].end(), 0);
+	}
+
+	for (i = 0; i < m; i++) {
+		cin >> a >> b;
+		a--;
+		b--;
+		A[a][b] = 1;
+		A[b][a] = 1;
+	}
+	cin >> r;
+	matrix ret = f(A, r);
+	cout << ret[0][0] % MOD;
+}*/
+
+/*const int MAX = 1e5; // 2208 보석 줍기
+int arr[MAX], pSum[MAX];
+int main() {
+	int n, m, i;
+	cin >> n >> m;
+	if (n < m) {
+		cout << 0;
+		return 0;
+	}
+	for (i = 0; i < n; i++) {
+		cin >> arr[i];
+		if (i > 0) pSum[i] = pSum[i - 1] + arr[i];
+		else pSum[i] = arr[i];
+	}
+
+	int ret = 0, minK=0;
+	for (i = m - 1; i < n; i++) {
+		ret = max(pSum[i] - minK, ret);
+		minK = min(minK, pSum[i-m+1]);
+	}
+	cout << ret;
+}*/
+
+/*typedef long long ll; // 13448 SW 역량 테스트
+const int MAX = 50;
+typedef struct problem {
+	int score, penalty, require;
+	problem() : score(0), penalty(0), require(0) {}
+	bool operator<(const problem& other) const {
+		return 1LL * require* other.penalty < 1LL * penalty* other.require;
+	}
+
+	ll get(int tm) {
+		return score - 1LL * penalty * ((ll)tm + require);
+	}
+}Problem;
+
+Problem arr[MAX];
+
+int n, t;
+ll cache[MAX][100001];
+ll dp(int idx, int tm) {
+	if (idx == n) return 0;
+	ll& ret = cache[idx][tm];
+	if (ret != -1) return ret;
+	ret = dp(idx + 1, tm);
+	if (t >= tm + arr[idx].require) ret = max(ret, arr[idx].get(tm) + dp(idx + 1, tm + arr[idx].require));
+	return ret;
+}
+int main() {
+	int i, a;
+	cin >> n >> t;
+
+	for (i = 0; i < n; i++) {
+		cin >> a;
+		arr[i].score = a;
+	}
+	for (i = 0; i < n; i++) {
+		cin >> a;
+		arr[i].penalty = a;
+	}
+	for (i = 0; i < n; i++) {
+		cin >> a;
+		arr[i].require = a;
+	}
+	sort(arr, arr + n);
+	memset(cache, -1, sizeof(cache));
+	cout << dp(0, 0);
+}*/
+
+/*typedef long long ll; //13343 block game
+map<pair<int, int>, bool> cache;
+bool dp(ll n, ll m) {
+	if (cache.count({ n, m })) return cache[{ n, m }];
+	bool ret = false;
+	if (n % m == 0) ret = true;
+	else if (n < m * 2) ret = !dp(m, n - m);
+	else ret = true;
+	return cache[{ n, m }] = ret;
+}
+
+int main() {
+	ll n, m;
+	cin >> n >> m;
+	if (n < m) swap(n, m);
+	if (dp(n, m)) cout << "win";
+	else cout << "lose";
+}*/
+
+/*const int MAX = 1e5 + 1; // 수열과 쿼리 3
+int arr[MAX];
+vector<int> tree[4 * MAX + 1];
+
+vector<int> merge(vector<int> a, vector<int> b) {
+	int i = 0, j = 0, idx = 0, aSize = a.size(), bSize = b.size();
+	vector<int> tmp(aSize + bSize);
+	while (i < aSize && j < bSize) {
+		if (a[i] < b[j]) tmp[idx++] = a[i++];
+		else tmp[idx++] = b[j++];
+	}
+	while (i < aSize) tmp[idx++] = a[i++];
+	while (j < bSize) tmp[idx++] = b[j++];
+	return tmp;
+}
+
+vector<int> init(int start, int end, int node) {
+	if (start == end) return tree[node] = { arr[start] };
+	int mid = start + end >> 1;
+	return tree[node] = merge(init(start, mid, node * 2), init(mid + 1, end, node * 2+1));
+}
+
+int bs(vector<int> vec, int val) {
+	if (vec.size() == 1) {
+		return vec[0] > val;
+	}
+	int l = 0, r = vec.size(), mid;
+	while (l + 1 < r) {
+		mid = l + r >> 1;
+		if (vec[mid] > val) r = mid;
+		else l=mid;
+	}
+	return vec.size() - l - 1;
+}
+
+int find(int start, int end, int l, int r, int node, int val) {
+	if (end<l || start>r) return 0;
+	if (l <= start && end <= r) {
+		//return tree[node].end() - upper_bound(tree[node].begin(), tree[node].end(), val);
+		return bs(tree[node], val);
+	}
+	int mid = start + end >> 1;
+	return find(start, mid, l, r, node * 2, val) + find(mid + 1, end, l, r, node * 2 + 1, val);
+}
+
+int main() {
+	int n, m, i, a, b, c, last=0;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+	init(0, n - 1, 1);
+	cin >> m;
+	for (i = 0; i < m; i++) {
+		cin >> a >> b >> c;
+		a ^= last;
+		b ^= last;
+		c ^= last;
+		last = find(0, n - 1, a-1, b-1, 1, c);
+		cout << last << "\n";
+	}
+}*/
+
+/*const int MAX = 1e5; //1725 히스토그램
+int arr[MAX];
+
+int getArea(int start, int end) {
+	if (start > end) return 0;
+	if (start == end) return arr[start];
+	int mid = start + end >> 1;
+	int ret = max(getArea(start, mid), getArea(mid + 1, end));
+
+	int l = mid, r = mid, w=1, area=arr[mid], height=arr[mid];
+	while (r - l <= end - start) {
+		int lHeight = (l > start ? min(height, arr[l-1]) : -1);
+		int rHeight = (r < end ? min(height, arr[r + 1]) : -1);
+
+		if (lHeight > rHeight) {
+			height = lHeight;
+			l--;
+		}
+		else {
+			height = rHeight;
+			r++;
+		}
+		area = max(area, height * (++w));
+	}
+	return max(ret, area);
+}
+int main() {
+	int n, i;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+	cout << getArea(0, n - 1);
+}*/
+
+/*const int MOD = 1234567; //2780 비밀번호
+int nxt[4][2] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+int cache[1001][4][3], n;
+
+int dp(int idx, int x, int y) {
+	if (idx == n - 1) return 1;
+	int& ret = cache[idx][x][y];
+	if (ret != -1) return ret;
+	ret = 0;
+	if (x == 3) ret = (ret + dp(idx + 1, x - 1, y)) % MOD;
+	else {
+		for (int i = 0; i < 4; i++) {
+			int nx = x + nxt[i][0], ny = y + nxt[i][1];
+			if (nx < 0 || (ny != 0 && nx > 2) || ny < 0 || ny>2) continue;
+			ret += dp(idx + 1, nx, ny);
+			ret %= MOD;
+		}
+	}
+	return ret;
+}
+
+int main() {
+	int t;
+	cin >> t;
+	while (t--) {
+		cin >> n;
+		int ret = 0, i, j;
+		memset(cache, -1, sizeof(cache));
+		for (i = 0; i < 3; i++) {
+			for (j = 0; j < 3; j++) ret = (ret + dp(0, i, j)) % MOD; //1~9
+		}
+		ret = (ret + dp(0, 3, 0)) % MOD; // 0
+		cout << ret << "\n";
+	}
+}*/
+
+/*typedef long long ll; // 2159 케익 배달
+const int MAX = 1e5;
+int n, arr[MAX + 1][2], pos[5][2] = { {-1, 0}, {0, 1}, {1, 0}, {0, -1}, {0, 0} };
+ll cache[MAX][5];
+
+ll dp(int idx, int p) {
+	vector<int> vec;
+	if (idx == n) return 0;
+	ll& ret = cache[idx][p];
+	if (ret != -1) return ret;
+	ret = 1e12;
+	int x = arr[idx][0] + pos[p][0], y = arr[idx][1] + pos[p][1];
+	for (int i = 0; i < 5; i++) {
+		int nx = arr[idx + 1][0] + pos[i][0], ny = arr[idx + 1][1] + pos[i][1];
+		ll dist = 1LL * abs(x - nx) + abs(y - ny);
+		ret = min(ret, dist + dp(idx + 1, i));
+	}
+	return ret;
+}
+
+int main() {
+	cin >> n;
+	for (int i = 0; i <= n; i++) {
+		cin >> arr[i][0] >> arr[i][1];
+	}
+	memset(cache, -1, sizeof(cache));
+	cout << dp(0, 4);
+}*/
+
+/*int main() { // 6443 애너그램
+	int n, i;
+	string s;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> s;
+		vector<string> vec;
+		sort(s.begin(), s.end());
+		do {
+			vec.push_back(s);
+		} while (next_permutation(s.begin(), s.end()));
+		vec.erase(unique(vec.begin(), vec.end()), vec.end());
+		sort(vec.begin(), vec.end());
+		for (auto it : vec) {
+			cout << it << "\n";
+		}
+	}
+}*/
+
+/*int main() { //1919 애너그램 만들기
+	int arr[26] = { 0, };
+	string a, b;
+	cin >> a >> b;
+	int i, aLen = a.length(), bLen = b.length();
+	for (i = 0; i < aLen; i++) {
+		arr[a[i] - 'a']++;
+	}
+	for (i = 0; i < bLen; i++) {
+		arr[b[i] - 'a']--;
+	}
+	int ret = 0;
+	for (i = 0; i < 26; i++) ret += (arr[i] < 0 ? -arr[i] : arr[i]);
+	cout << ret;
+}*/
+
+/*const int MAX = 101, INF = 1e9; // 플로이드 with 최단 경로 출력
+int dist[MAX][MAX], nxt[MAX][MAX];
+
+int main() {
+	int n, m, i, j, k, a, b, c;
+	cin >> n >> m;
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= n; j++) {
+			if (i != j) dist[i][j] = INF;
+		}
+	}
+
+	for (i = 0; i < m; i++) {
+		cin >> a >> b >> c;
+		dist[a][b] = min(dist[a][b], c);
+		nxt[a][b] = b;
+	}
+
+	for (k = 1; k <= n; k++) {
+		for (i = 1; i <= n; i++) {
+			for (j = 1; j <= n; j++) {
+				if (dist[i][j] > dist[i][k] + dist[k][j]) {
+					dist[i][j] = dist[i][k] + dist[k][j];
+					nxt[i][j] = nxt[i][k];
+				}
+			}
+		}
+	}
+
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= n; j++) {
+			cout << (dist[i][j] == INF ? 0 : dist[i][j]) << " ";
+		}
+		cout << "\n";
+	}
+
+	cout << "\n";
+	int start = 2, end = 5;
+	for (i = start; i != end; i = nxt[i][end]) {
+		cout << i << " ";
+	}
+	cout << end << "\n";
+}*/
+
+/*const int MAX = 1001, INF=1e9; // 다익스트라, 경로 출력 버전
+vector<pair<int, int>> adj[MAX];
+int dist[MAX], pre[MAX];
+int main() {
+	int n, m, i, a, b, c, s, e;
+	cin >> n >> m;
+	fill(dist, dist + MAX, INF);
+	for (i = 0; i < m; i++) {
+		cin >> a >> b >> c;
+		adj[a].emplace_back(b, c);
+	}
+
+	cin >> s >> e;
+	dist[s] = 0;
+	priority_queue<pair<int, int>> pQue;
+	pQue.emplace(0, s);
+	while (!pQue.empty()) {
+		int t = pQue.top().second;
+		pQue.pop();
+		for (auto it : adj[t]) {
+			int next = it.first, cost = it.second;
+			if (dist[next] > dist[t] + cost) {
+				dist[next] = dist[t] + cost;
+				pre[next] = t;
+				pQue.emplace(-dist[next], next);
+			}
+		}
+	}
+
+	cout << dist[e] << "\n";
+	vector<int> path;
+	for (i = e; i != s; i = pre[i]) {
+		path.push_back(i);
+	}
+	path.push_back(s);
+	reverse(path.begin(), path.end());
+	cout << path.size() << "\n";
+	for(auto it : path) {
+		cout << it << " ";
+	}
+}*/
+
+/*typedef long long ll; // 펜윅 트리
+const int MAX = 1e6 + 1;
+
+ll n, arr[MAX], tree[MAX];
+
+void update(int idx, ll val) {
+	while (idx <= n) {
+		tree[idx] += val;
+		idx += (idx & -idx);
+	}
+}
+
+ll find(int idx) {
+	ll ret = 0;
+	while (idx > 0) {
+		ret += tree[idx];
+		idx -= (idx & -idx);
+	}
+	return ret;
+}
+
+int main() {
+	int m, k, i;
+	ll a, b, c;
+	cin >> n >> m >> k;
+	for (i = 1; i <= n; i++) {
+		cin >> arr[i];
+		update(i, arr[i]);
+	}
+
+	for (i = 0; i < m + k; i++) {
+		cin >> a >> b >> c;
+		if (a == 1) { // update
+			update(b, c-(find(b)-find(b-1)));
+		}
+		else { //find
+			cout << find(c) - find(b - 1) << "\n";
+		}
+	}
+}*/
+
+/*int n, board[1001][1001]; // 오일러 회로 출력
+
+void dfs(int idx) {
+	for (int i = 1; i <= n; i++) {
+		if (board[idx][i]) {
+			board[idx][i]--;
+			board[i][idx]--;
+			dfs(i);
+		}
+	}
+	printf("%d ", idx);
+}
+int main() {
+	int i, j, chk = 0;
+	scanf("%d", &n);
+	for (i = 1; i <= n; i++) {
+		int tmp = 0;
+		for (j = 1; j <= n; j++) {
+			scanf("%d", &board[i][j]);
+			tmp += board[i][j];
+		}
+		if (tmp % 2) chk = 1;
+	}
+	if (chk) {
+		printf("-1");
+		return 0;
+	}
+	dfs(1);
+}*/
+
+/*int nxt[4][2] = { {0, 1}, {1, 0},{0, -1}, {-1, 0} };
+bool visited[100][100];
+char arr[100][100];
+int main() {
+	int n, m, i, j;
+	scanf("%d%d", &n, &m);
+	for (i = 0; i < n; i++) {
+		scanf("%s", arr[i]);
+	}
+
+	queue<pair<pair<int, int>, int>> que;
+	que.push({ {0, 0}, 1 });
+	while (!que.empty()) {
+		int x = que.front().first.first,
+			y = que.front().first.second,
+			dist = que.front().second;
+		que.pop();
+		if (x == n - 1 && y == m - 1) {
+			printf("%d", dist);
+			break;
+		}
+		for (i = 0; i < 4; i++) {
+			int nx = x + nxt[i][0], ny = y + nxt[i][1];
+			if (nx < 0 || nx >= n || ny < 0 || ny >= m || visited[nx][ny] || arr[nx][ny]=='0') continue;
+			visited[nx][ny] = 1;
+			que.push({ {nx, ny}, dist + 1 });
+		}
+	}
+}*/
+
+/*typedef struct point { //convex hull
+	int x, y;
+	int p, q;
+	point(int xPos, int yPos) : x(xPos), y(yPos), p(1), q(0) {}
+	bool operator<(const point& cmp) const {
+		if (1LL * q * cmp.p != 1LL * p * cmp.q) return 1LL * q * cmp.p < 1LL * p * cmp.q;
+		if (y != cmp.y) return y < cmp.y;
+		else return x < cmp.x;
+	}
+}Point;
+
+long long ccw(Point a, Point b, Point c) {
+	return 1LL * (b.x - a.x) * (c.y - a.y) - 1LL * (c.x - a.x) * (b.y - a.y);
+}
+vector<Point> vec;
+int main() {
+	int n, i, a, b;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> a >> b;
+		vec.push_back({ a, b });
+	}
+	sort(vec.begin(), vec.end());
+	
+	for (i = 1; i < n; i++) {
+		vec[i].p = vec[i].x - vec[0].x;
+		vec[i].q = vec[i].y - vec[0].y;
+	}
+
+	sort(vec.begin() + 1, vec.end());
+	stack<int> stk;
+	stk.push(0);
+	stk.push(1);
+	int next = 2;
+	while (next < n) {
+		while (stk.size() >= 2) {
+			int first = stk.top();
+			stk.pop();
+			int second = stk.top();
+
+			if (ccw(vec[second], vec[first], vec[next]) > 0) {
+				stk.push(first);
+				break;
+			}
+		}
+		stk.push(next++);
+	}
+	printf("%d\n", stk.size());
+}*/
+
+/*int lowerBound(int arr[], int target, int n) {
+	int l = 0, r = n - 1, mid;
+	while (l < r) {
+		mid = l + r >> 1;
+		if (arr[mid] <= target) l=mid + 1;
+		else r=mid;
+	}
+	return l;	
+}
+int main() {
+	int arr[10] = { 1, 3, 4, 5, 7, 10, 10, 10, 12, 18 };
+	int target = 10;
+	int n = 10;
+	printf("lower bound is [%d]\n", lowerBound(arr, target, n));
+}*/
+
+/*int main() { //2759 팬케익 뒤집기
+	int i, j, n, num, k;
+	cin >> n;
+	while (n--) {
+		vector<int> vec;
+		cin >> num;
+		for (i = 0; i < num; i++) {
+			cin >> k;
+			vec.push_back(k);
+		}
+
+		///////////////////////////////////////////////////////////////////////////////////////
+		//1. i <- num to 2, 아래에서부터 차례대로 맞춰간다.
+		//2. 현재 제일 위의 팬케익이 i가 아닐 경우
+		//   i가 있는 곳까지 reverse -> 맨 위의 팬케익이 i가 된다.
+		//3. 위에서부터 i까지 reverse -> 위에서부터 i번째에 i번째 팬케익이 위치하게 된다.
+		///////////////////////////////////////////////////////////////////////////////////////
+
+		vector<int> ret;
+		for (i = num; i > 1; i--) {
+			for (j = 0; j < num - 1; j++) { // 순서대로 쌓여있는지 체크
+				if (vec[j] + 1 != vec[j + 1]) break;
+			}
+			if (j == num - 1) break;
+			if (vec[0] != i) {
+				for (j = 0; j < num; j++) {
+					if (vec[j] == i) {
+						ret.push_back(j + 1);
+						reverse(vec.begin(), vec.begin() + j + 1);
+						break;
+					}
+				}
+			}
+			ret.push_back(i);
+			reverse(vec.begin(), vec.begin() + i);
+		}
+		cout << ret.size() << " ";
+		for (auto it : ret) cout << it << " ";
+		cout << "\n";
+	}
+}*/
+
+/*const int MAX = 5000; //16287 Parcel
+int arr[MAX], weight[800001];
+int main() {
+	int i, j, n, m, sumSz=0; // arr : 입력 배열, sum : arr에서 원소 두 개를 뽑아 구한 합을 저장
+													 // sumSz : sum 배열 크기
+	cin >> m >> n;
+	for (i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+
+	for (i = 0; i < n; i++) {
+		for (j = i + 1; j < n; j++) {
+			int sum = arr[i] + arr[j];
+			if (sum > m) continue;
+			if (weight[m - sum]) {
+				cout << "YES";
+				return 0;
+			}
+		}
+		for (j = 0; j < i; j++) {
+			if (arr[i] + arr[j] < m) weight[arr[i] + arr[j]] = 1;
+		}
+	}
+	cout << "NO";
+}*/
+
+/*int main() { //15820 맞았는데 왜 틀리죠?
+	int n, m, i, a, b;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin >> a >> b;
+		if (a != b) {
+			cout << "Wrong Answer";
+			return 0;
+		}
+	}
+
+	for (i = 0; i < m; i++) {
+		cin >> a >> b;
+		if (a != b) {
+			cout << "Why Wrong!!!";
+			return 0;
+		}
+	}
+	cout << "Accepted";
+}*/
+
+/*char alphabet[26]; // 13776 Alpha puzzle
+int chk[26], idx = 0;
+int main() {
+	int n, i;
+	cin >> n;
+	cin.get();
+	while (n--) {
+		string s;
+		getline(cin, s);
+		cout << "s : " << s << endl;
+		for (i = 0; i < s.length(); i++) {
+			if (s[i] == ' ') continue;
+			if (chk[s[i] - 'A'] == 0) {
+				chk[s[i] - 'A'] = 1;
+				alphabet[idx++] = s[i];
+			}
+		}
+	}
+	for (i = 0; i < 26; i++) {
+		cout << alphabet[i];
+	}
+}*/
+
+/*int main() { // 13240 Chessboard
+	int n, m, i, j, idx=0;
+	cin >> n >> m;
+	char c[2] = { '*', '.' };
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++) {
+			cout << c[idx];
+			idx = (idx + 1) % 2;
+		}
+		cout << endl;
+		if(m%2==0) idx = (idx + 1) % 2;
+	}
+}*/
+
+/*typedef long long ll; //1176 색칠 1
+int main() {
+	ll w, h, f, c, x1, y1, x2, y2;
+	cin >> w >> h >> f >> c >> x1 >> y1 >> x2 >> y2;
+	ll area = (x2 - x1) * (y2 - y1) * (c+1);
+	if (f <= w / 2) { //왼쪽 크기 <= 오른쪽 크기
+		if (f <= x1) { //왼쪽 영향 X
+			cout << w*h - area;
+		}
+		else { //왼쪽 영향 받음
+			cout << w * h - (area + (min(f, x2) - x1) * (y2 - y1) * (c+1));
+		}
+	} 
+	else { //왼쪽 크기 > 오른쪽 크기
+		if (w <= x1 + f) { //오른쪽 영향 X
+			cout << w * h - area;
+		}
+		else { //오른쪽 영향 받음
+			cout << w * h - (area + (min(w, f + x2) - (f + x1)) * (y2 - y1) * (c+1));
+		}
+	}
+}*/
 ////////////////////////////////////////
 	/*삼성 SW 역량 테스트 기출 문제*/
 ////////////////////////////////////////
