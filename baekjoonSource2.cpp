@@ -105,3 +105,58 @@ int main() {
 		cout << endl;
 	}
 }*/
+
+typedef long long ll;
+ll num[50];
+int n, m;
+char board[50][50];
+
+bool chk(ll num, int digit) {
+	return num & ((1ll) << (n-digit-1));
+}
+
+ll reverse(ll num) {
+	return num ^ (((1ll) << n) - 1);
+}
+
+int count(ll sum) {
+	int ret = 0;
+	while (sum > 0) {
+		if (sum & 1) ret++;
+		sum >>= 1;
+	}
+	return ret;
+}
+
+int main() {
+	int i, j, k;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin >> board[i];
+	}
+	cin >> k;
+
+	// 각 열을 숫자로 나타내기
+	for (i = 0; i < m; i++) { //열
+		for (j = 0; j < n; j++) { //행
+			num[i] += board[j][i]-'0';
+			if(j!=n-1) num[i] <<= 1;
+		}
+	}
+
+	int ret = 0;
+	for (i = 0; i < n; i++) {
+		int remain = k;
+		long long sum = ((1ll)<<n) - 1; // 각 열들 and 연산한 결과가 들어감.
+		for (j = 0; j < m; j++) {
+			if (!chk(num[j], i)) { // num[j]의 2^i 자리가 0인 경우
+				sum &= reverse(num[j]);
+				remain--;
+			}
+			else sum &= num[j];
+		}
+		if (remain < 0 || remain % 2 == 1) continue;
+		ret = max(ret, count(sum));
+	}
+	cout << ret << endl;
+}
