@@ -303,7 +303,7 @@ int main() {
 	}
 }*/
 
-const int MAX = 300000;
+/*const int MAX = 300000; //15998 카카오머니
 typedef long long ll;
 int n;
 ll arr[MAX][2];
@@ -312,15 +312,6 @@ vector<ll> measure;
 ll gcd(ll a, ll b) {
 	if (b == 0) return a;
 	return gcd(b, a % b);
-}
-
-void getMeasure(ll n) {
-	for (ll i = 1; i < sqrt(n); i++) {
-		if (n % i == 0) {
-			measure.push_back(i);
-			measure.push_back(n / i);
-		}
-	}
 }
 
 int main() {
@@ -345,31 +336,12 @@ int main() {
 		return 0;
 	}
 	if (vec.size()) {
-		//2. 인출 금액들의 공약수 구하기
-		//2-1. 인출 금액들의 최대공약수 구하기
+		//2. 인출 금액들의 최대공약수 구하기
 		ll tmp = vec[0].second;
 		for (i = 1; i < vec.size(); i++) {
 			if (tmp < vec[i].second) tmp = gcd(vec[i].second, tmp);
 			else tmp = gcd(tmp, vec[i].second);
 		}
-
-		//2-2. 구한 최대공약수의 약수 구하기
-		/*getMeasure(tmp);
-		for (auto km : measure) {
-			int chk = 1;
-			for (auto it : vec) {
-				int idx = it.first;
-				ll prev = (idx == 0 ? 0 : arr[idx - 1][1]);
-				if (it.second - km >= -(prev + arr[idx][0])) { // 만일 인출을 필요 이상으로 한 경우, 이 값은 답이 될 수 없다.
-					chk = 0;
-					break;
-				}
-			}
-			if (chk) {
-				cout << km;
-				return 0;
-			}
-		}*/
 
 		int chk = 1;
 		for (auto it : vec) {
@@ -388,4 +360,4 @@ int main() {
 		cout << -1;
 	}
 	else cout << 1;
-}
+}*/
