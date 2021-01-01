@@ -361,3 +361,88 @@ int main() {
 	}
 	else cout << 1;
 }*/
+
+/*typedef vector<vector<long long>> Matrix; //11444 피보나치 수 6
+const int MOD = 1e9 + 7;
+long long n;
+Matrix init = { {1, 1}, {1, 0} };
+
+Matrix matrixMul(Matrix a, Matrix b) {
+	Matrix ret(2);
+	int i, j, k;
+	for (i = 0; i < 2; i++) {
+		ret[i].resize(2);
+		for (j = 0; j < 2; j++) {
+			ret[i][j] = 0;
+			for (k = 0; k < 2; k++) {
+				ret[i][j] += a[i][k] * b[k][j];
+				ret[i][j] %= MOD;
+			}
+		}
+	}
+	return ret;
+}
+
+Matrix func(long long n) {
+	if (n == 1) return init;
+	Matrix tmp;
+	if (n % 2) { // n 홀수
+		tmp = func(n - 1);
+		return matrixMul(init, tmp);
+	}
+	else { // n 짝수
+		tmp = func(n / 2);
+		return matrixMul(tmp, tmp);
+	}
+}
+
+int main(){
+	cin >> n;
+	if (n == 0) {
+		cout << 0;
+		return 0;
+	}
+
+	Matrix ret = func(n);
+	cout << ret[1][0];
+}*/
+
+/*const int MOD = 1e9 + 7; // 15999 뒤집기	
+int nxt[4][2] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+char board[2000][2000];
+
+long long func(int num) {
+	if (num == 1) return 2;
+	long long tmp;
+	if (num % 2) {
+		tmp = func(num - 1);
+		return (2 * tmp) % MOD;
+	}
+	else {
+		tmp = func(num / 2);
+		return (tmp * tmp) % MOD;
+	}
+}
+int main() {
+	int i, j, k, n, m;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin >> board[i];
+	}
+
+	int num = 0;
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++) {
+			char here = board[i][j];
+			for (k = 0; k < 4; k++) {
+				int nxtX = i + nxt[k][0], nxtY = j + nxt[k][1];
+				if (nxtX < 0 || nxtX >= n || nxtY < 0 || nxtY >= m) continue;
+				if (board[nxtX][nxtY] != here) break;
+			}
+			if (k == 4) {
+				num++;
+			}
+		}
+	}
+	cout << func(num) << endl;
+}*/
