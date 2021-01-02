@@ -447,7 +447,7 @@ int main() {
 	cout << func(num) << endl;
 }*/
 
-/*const int UNIT = 10000;
+/*const int UNIT = 10000; // 15953 »ó±İ ÇåÅÍ
 int firstArr[2][6] = { {1, 3, 6, 10, 15, 21}, {500, 300, 200, 50, 30, 10} },
     secondArr[2][5] = { {1, 3, 7, 15, 31}, {512, 256, 128, 64, 32} };
 int main() {
