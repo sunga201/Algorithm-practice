@@ -446,3 +446,63 @@ int main() {
 	}
 	cout << func(num) << endl;
 }*/
+
+/*const int UNIT = 10000;
+int firstArr[2][6] = { {1, 3, 6, 10, 15, 21}, {500, 300, 200, 50, 30, 10} },
+    secondArr[2][5] = { {1, 3, 7, 15, 31}, {512, 256, 128, 64, 32} };
+int main() {
+	int i, j, t, a, b;
+	cin >> t;
+	for (i = 0; i < t; i++) {
+		cin >> a >> b;
+		int num = 0;
+		if (a != 0) {
+			for (j = 0; j < 6; j++) {
+				if (firstArr[0][j] >= a) {
+					num += firstArr[1][j];
+					break;
+				}
+			}
+		}
+
+		if (b != 0) {
+			for (j = 0; j < 5; j++) {
+				if (secondArr[0][j] >= b) {
+					num += secondArr[1][j];
+					break;
+				}
+			}
+		}
+		cout << num * UNIT << "\n";
+	}
+}*/
+
+/*typedef long long ll; // 1081 гу
+
+int arr[10] = { 0, 1, 3, 6, 10, 15, 21, 28, 36, 45 };
+ll func(int n) {
+	ll div = 1, sum = 0;
+	while (n / div > 0) {
+		int quot = n / (div * 10), remainder = n % (div * 10);
+		if (n / (div*10) != 0) {
+			sum += quot * div * arr[9];
+		}
+		ll smallerDivQuot = remainder / div, smallerDivRemainder = remainder % div;
+		if (div != 1) {
+			sum += smallerDivQuot * (smallerDivRemainder + 1ll);
+		}
+		if (div == 1) {
+			sum += arr[smallerDivQuot] * div;
+		}
+		else
+			sum += arr[smallerDivQuot - 1] * div;
+		div *= 10;
+	}
+	return sum;
+}
+int main() {
+	int a, b;
+	cin >> a >> b;
+	cout << func(b) - func(a - 1);
+}*/
+
