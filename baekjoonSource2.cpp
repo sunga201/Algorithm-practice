@@ -506,3 +506,19 @@ int main() {
 	cout << func(b) - func(a - 1);
 }*/
 
+char board[8][8];
+int main() {
+	int i, j, chk = 1, ret=0;
+	for (i = 0; i < 8; i++) {
+		cin >> board[i];
+	}
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			cout << "i : " << i << ", j : " << j << ", chk : " << chk << endl;
+			if (chk && board[i][j] == 'F') ret++;
+			chk = (chk + 1) % 2;
+		}
+		chk = (chk + 1) % 2;
+	}
+	cout << ret;
+}
