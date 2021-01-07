@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 #include <queue>
@@ -506,7 +507,7 @@ int main() {
 	cout << func(b) - func(a - 1);
 }*/
 
-char board[8][8];
+/*char board[8][8]; //1100 ÇÏ¾á Ä­
 int main() {
 	int i, j, chk = 1, ret=0;
 	for (i = 0; i < 8; i++) {
@@ -514,11 +515,112 @@ int main() {
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
-			cout << "i : " << i << ", j : " << j << ", chk : " << chk << endl;
 			if (chk && board[i][j] == 'F') ret++;
 			chk = (chk + 1) % 2;
 		}
 		chk = (chk + 1) % 2;
 	}
 	cout << ret;
+}*/
+
+/*int rad[2002];
+int main() {
+
+	string s;
+	cin >> s;
+	char temp[2002];
+	int i, r=0, c=0, len=s.length();
+	for (i = 0; i < len; i++) {
+		temp[2 * i] = '#';
+		temp[2 * i + 1] = s[i];
+	}
+	temp[2 * len] = '#';
+	temp[2 * len + 1] = '\0';
+	for (i = 0; i <= 2*len; i++) {
+		if (r < i) rad[i] = 0;
+		else rad[i] = min(rad[2 * c - i], r - i);
+		while (i + rad[i] + 1 <= 2 * len && i - (rad[i] + 1) >= 0
+			&& temp[i + rad[i] + 1] == temp[i - rad[i] - 1]) {
+			rad[i]++;
+		}
+		if (r < i + rad[i]) {
+			r = i + rad[i];
+			c = i;
+		}
+	}
+
+	int mina = 1e9;
+	for (i = 0; i <= 2*len; i++) {
+		if (rad[i] + i == 2 * len) {
+			int t = ((i - 1) - (2 * len - 1 - i)) / 2;
+			mina = min(mina, t);
+		}
+	}
+	cout << len + mina << endl;
+}*/
+
+/*int dp[5000][5000]; // 5502 ÆÓ¸°µå·Ò
+int main() {
+	int i, j, n;
+	string s, sRev;
+	cin >> n >> sRev;
+	s = sRev;
+	reverse(sRev.begin(), sRev.end());
+	for (i = 0; i < n; i++) {
+		if (s[i] == sRev[0] || (i > 0 && dp[0][i - 1] == 1)) dp[0][i] = 1;
+		if (sRev[i] == s[0] || (i > 0 && dp[i - 1][0] == 1)) dp[i][0] = 1;
+	}
+
+	int ret = 0;
+	for (i = 1; i < n; i++) {
+		for (j = 1; j < n; j++) {
+			if (sRev[i] == s[j]) dp[i][j] = dp[i - 1][j - 1] + 1;
+			dp[i][j] = max(dp[i][j], max(dp[i - 1][j], dp[i][j - 1]));
+			ret = max(ret, dp[i][j]);
+		}
+	}
+	cout << n - ret;
+}*/
+
+/*const int MAX = 2000000; // 1747 ¼Ò¼ö&ÆÓ¸°µå·Ò
+int arr[MAX], prime[MAX], sz=0;
+void func() {
+	int i;
+	for (i = 2; i * i <= MAX; i++) {
+		if (arr[i]) continue;
+		int here = i * 2;
+		while (here <= MAX) {
+			arr[here] = 1;
+			here += i;
+		}
+	}
+
+	for (i = 2; i < MAX; i++) {
+		if (arr[i] == 0) {
+			prime[sz++] = i;
+		}
+	}
 }
+
+bool isPalindrome(int num) {
+	string s = to_string(num);
+	int i=0, j=s.length()-1;
+	while (i < j) {
+		if (s[i] != s[j]) return false;
+		i++;
+		j--;
+	}
+	return true;
+}
+int main() {
+	int i, n;
+	func();
+	cin >> n;
+	for (i = 0; i < sz; i++) {
+		if (n > prime[i]) continue;
+		if (isPalindrome(prime[i])) {
+			cout << prime[i];
+			return 0;
+		}
+	}
+}*/
