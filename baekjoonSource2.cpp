@@ -523,7 +523,7 @@ int main() {
 	cout << ret;
 }*/
 
-/*int rad[2002];
+/*int rad[2002]; //1254 팰린드롬 만들기
 int main() {
 
 	string s;
