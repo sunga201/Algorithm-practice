@@ -624,3 +624,22 @@ int main() {
 		}
 	}
 }*/
+
+/*int main() { //10174 ÆÓ¸°µå·Ò
+	int n, i;
+	string s;
+	cin >> n;
+	cin.get();
+	while (n--) {
+		getline(cin, s);
+		transform(s.begin(), s.end(), s.begin(), ::tolower);
+		int len = s.length();
+		for (i = 0; i < len/2; i++) {
+			if (s[i] != s[len - i - 1]) {
+				cout << "No\n";
+				break;
+			}
+		}
+		if(i==len/2) cout << "Yes\n";
+	}
+}*/
