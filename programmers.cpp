@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
+#include <sstream>
 using namespace std;
 
 /*int arr[502], sum[502]; //2019 KAKAO BLIND RECRUITMENT - 실패율
@@ -31,5 +33,152 @@ vector<int> solution(int N, vector<int> stages) {
 		answer.push_back(it.second);
 	}
 
+	return answer;
+}*/
+
+/*vector<string> solution(vector<string> record) { // 2019 KAKAO BLIND RECRUITMENT - 오픈채팅방
+	vector<string> answer;
+	vector<pair<int, string>> log;
+	unordered_map<string, string> mappingInfo;
+
+	for (auto str : record) {
+		vector<string> tokenList;
+		string token;
+		stringstream ss(str);
+
+		while (ss >> token) {
+			tokenList.push_back(token);
+		}
+
+		switch (tokenList[0][0]) {
+		case 'E': //enter
+			mappingInfo[tokenList[1]] = tokenList[2];
+			log.emplace_back(0, tokenList[1]);
+			break;
+		case 'L': //leave
+			log.emplace_back(1, tokenList[1]);
+			break;
+
+		case 'C': //change
+			mappingInfo[tokenList[1]] = tokenList[2];
+			break;
+		}
+	}
+
+	for (auto it : log) {
+		string nick = mappingInfo[it.second];
+		if (it.first == 0) { //enter
+			answer.push_back(nick + "님이 들어왔습니다.");
+		}
+		else {//leave
+			answer.push_back(nick + "님이 나갔습니다.");
+		}
+	}
+	return answer;
+}*/
+
+/*vector<vector<string>> rel; // 2019 KAKAO BLIND RECRUITMENT - 후보키
+vector<vector<int>> candidate[9];
+// candidate[i]에는 컬럼 i개로 만든 후보키들이 들어간다.
+
+int answer = 0, rowLen, colLen;
+
+void dfs(int idx, int num, int max, vector<int> colList) {
+	if (num == max) {
+		// 키값이 유일한지 확인
+		vector<vector<string>> vec;
+		for (auto row : rel) {
+			vector<string> tmp;
+			for (auto col : colList) {
+				tmp.push_back(row[col - 1]);
+			}
+			for (auto exist : vec) {
+				if (includes(tmp.begin(), tmp.end(), exist.begin(), exist.end()))
+					return;
+			}
+			vec.push_back(tmp);
+		}
+
+		// 후보키인지 확인
+		for (int i = 1; i <= max; i++) {
+			for (auto part : candidate[i]) {
+				if (includes(colList.begin(), colList.end(), part.begin(), part.end())) { 
+				//part가 colList의 부분집합인지 확인한다.
+					return;
+				}
+			}
+		}
+		candidate[max].push_back(colList);
+		answer++;
+		return;
+	}
+
+	for (int i = idx + 1; i <= colLen; i++) {
+		colList[num] = i;
+		dfs(i, num + 1, max, colList);
+	}
+}
+
+int solution(vector<vector<string>> relation) {
+	rel = relation;
+	int i, j;
+	colLen = relation[0].size(), rowLen = relation.size();
+
+	for (i = 1; i <= colLen; i++) {
+		dfs(0, 0, i, vector<int>(i)); //dfs(idx, num, max, colList);
+	}
+	return answer;
+}*/
+
+/*typedef long long ll; //2019 KAKAO BLIND RECRUITMENT - 무지의 먹방 라이브
+
+int solution(vector<int> food_times, ll k) {
+	int answer = 0;
+	ll sum = 0;
+	for (auto time : food_times) {
+		sum += time;
+	}
+
+	if (sum <= k) answer = -1;
+	else {
+		int i, foodNum = food_times.size();
+
+		//1. 각각의 음식을 다 먹는데 걸리는 시간을 차례대로 기록함.
+		vector<ll> border;
+		vector<int> tmp = food_times;
+		sort(tmp.begin(), tmp.end());
+		border.push_back(foodNum * tmp[0]);
+
+		for (i = 1; i < tmp.size(); i++) {
+			border.push_back(border[i - 1] + (foodNum - i) * (tmp[i] - tmp[i - 1]));
+		}
+
+		//2. k초 동안 먹고 남아있는 음식 수, 테이블 회전 수, 그리고 찾는 음식의 번호를 구한다.
+		//   여기서 구한 번호는 다 먹은 음식을 생각하지 않고 매긴것이므로, 다시 food_items 배열을 순회하며
+		//   테이블 회전 수 이하인 음식들을 걸러내고 번호를 다시 매기면 최종 답을 구할 수 있다.
+		ll rotateNum = 0, eatenFoodNum = 0, last = 0, findNum = -1;
+		for (i = 0; i < border.size(); i++) {
+			if (k > border[i]) {
+				eatenFoodNum++;
+				last = border[i];
+				rotateNum = tmp[i];
+			}
+			else break;
+		}
+
+		ll div = (foodNum - eatenFoodNum);
+		findNum = (k - last - 1) % div;
+		findNum = (findNum + 1) % div;
+
+		//3. 다 먹은 음식들은 걸러내고 다시 번호를 매겨 최종 답을 찾는다.
+		for (i = 0; i < food_times.size(); i++) {
+			if (food_times[i] <= rotateNum) continue;
+			if (findNum == 0) {
+				answer = i + 1;
+				break;
+			}
+			findNum--;
+		}
+	}
 	return answer;
 }*/
