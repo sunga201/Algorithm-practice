@@ -643,3 +643,75 @@ int main() {
 		if(i==len/2) cout << "Yes\n";
 	}
 }*/
+
+/*int main() { // 13333 Q-ÀÎµ¦½º
+	int i, n, a;
+	vector<int> vec;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> a;
+		vec.push_back(a);
+	}
+
+	sort(vec.begin(), vec.end());
+	for (i = 10000; i >= 0; i--) {
+		auto it = lower_bound(vec.begin(), vec.end(), i);
+		if (vec.end() - it >= i) {
+			cout << i;
+			return 0;
+		}
+	}
+}*/
+
+/*int rail[40000], eat[3001]; //2531 È¸Àü ÃÊ¹ä
+int main() {
+	int i, j, n, d, k, c, now=0;
+	cin >> n >> d >> k >> c;
+	for (i = 0; i < n; i++) {
+		cin >> rail[i];
+	}
+
+	for (i = 0; i < k; i++) {
+		rail[n + i] = rail[i];
+		eat[rail[i]]++; // 0¹øºÎÅÍ k-1¹ø ÃÊ¹äÀ» ¸ÔÀ» ¶§
+		if (eat[rail[i]] == 1) now++;
+	}
+	eat[c]++; // ÄíÆùÀ¸·Î ¸Ô´Â ÃÊ¹ä Ç¥½Ã
+	if (eat[c] == 1) now++;
+	int ret = now; // ret´Â ÃÖ´ë·Î ¸¹Àº Á¾·ùÀÇ ÃÊ¹äÀ» ¸ÔÀ» ¶§ÀÇ ÃÊ¹ä °¡Áþ¼ö
+
+	int l = 0, r = k-1;
+	while (r < n + k - 2) {
+		eat[rail[l]]--;
+		if (eat[rail[l]] == 0) now--;
+
+		eat[rail[r + 1]]++;
+		if (eat[rail[r + 1]] == 1) now++;
+		ret = max(ret, now);
+		l++;
+		r++;
+	}
+	cout << ret;
+}*/
+
+/*int main() { //1940 ÁÖ¸ù
+	int i, n, m, a, ret=0;
+	vector<int> vec;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin >> a;
+		vec.push_back(a);
+	}
+	sort(vec.begin(), vec.end());
+	int l = 0, r = n - 1;
+	while (l < r) {
+		if (vec[l] + vec[r] == m) {
+			ret++;
+			l++;
+			r--;
+		}
+		else if (vec[l] + vec[r] < m) l++;
+		else r--;
+	}
+	cout << ret;
+}*/
