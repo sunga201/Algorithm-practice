@@ -182,3 +182,144 @@ int solution(vector<int> food_times, ll k) {
 	}
 	return answer;
 }*/
+
+//KMP failure function
+vector<int> getFailure(const string& str) {
+	int i, j = 0, len = str.length();
+	vector<int> ret(len, 0);
+	for (i = 1; i < len; i++) {
+		while (j > 0 && str[i] != str[j]) j = ret[j - 1];
+		if (str[i] == str[j]) ret[i] = ++j;
+	}
+	return ret;
+}
+
+//KMP
+vector<int> kmp(const string & a, const string & b, vector<int> failure) { // a 안에서 b를 찾고, 그 시작 지점의 인덱스를 저장한 배열을 리턴한다.
+
+	vector<int> ret;
+	int i, j = 0, aLen = a.length(), bLen = b.length();
+	for (i = 0; i < aLen; i++) {
+		while (j > 0 && a[i] != b[j]) j = failure[j - 1];
+		if (a[i] == b[j]) {
+			if (j == bLen - 1) {
+				ret.push_back(i - bLen + 1);
+				j = failure[j];
+			}
+			else ++j;
+		}
+	}
+	return ret;
+}
+
+void toLowerCase(string & str) { // 대문자 -> 소문자로 변환
+	for (auto& ch : str) {
+		if (ch >= 'A' && ch <= 'Z') ch = ch - 'A' + 'a';
+	}
+}
+
+bool isAlphabet(char ch) {
+	return ch >= 'a' && ch <= 'z';
+}
+
+bool cmp(pair<int, double> a, pair<int, double> b) {
+	if (a.second == b.second) return a.first < b.first;
+	return a.second > b.second;
+}
+
+//모든 page 및 word의 단어는 소문자로 변환한다.
+int solution(string word, vector<string> pages) {
+	int i, idx = 0, wLen = word.length();
+	toLowerCase(word);
+	unordered_map<string, double> base, totalScore;
+	vector<string> urlList;
+	vector<string>* pageWordList = new vector<string>[pages.size()]; //각 페이지의 단어들이 저장되는 배열
+
+	// 1. 링크 구해서 매핑하기
+	for (auto page : pages) {
+		stringstream ss(page);
+		string tmp;
+		vector<string>& wordList = pageWordList[idx];
+		while (ss >> tmp) {
+			wordList.push_back(tmp);
+		}
+
+		for (i = 0; i < wordList.size(); i++) {
+			if (wordList[i] == "<meta") {
+				while (wordList[i][wordList[i].length() - 1] != '>') i++;
+				if (wordList[i].substr(0, 7) == "content") {
+					int idx = 9, urlLen = 1;
+					while (wordList[i][idx] != '"') {
+						idx++;
+						urlLen++;
+					}
+
+					string url = wordList[i].substr(8, urlLen + 1);
+					totalScore[url] = 0.0;
+					base[url] = 0.0;
+					urlList.push_back(url);
+				}
+			}
+		}
+		idx++;
+	}
+
+	idx = 0;
+	//2. 페이지별 기본점수 구하기
+	for (auto page : pages) {
+		int pLen = page.length(), baseScore = 0;
+		toLowerCase(page);
+
+		//2-1. KMP 알고리즘을 이용해 기본 점수 구하기
+		vector<int> failure = getFailure(word);
+		vector<int> kmpVec = kmp(page, word, failure);
+		for (auto idx : kmpVec) {
+			if ((idx > 0 && isAlphabet(page[idx - 1])) || ((idx + wLen < pLen) && isAlphabet(page[idx + wLen]))) { // not word
+				continue;
+			}
+			baseScore++;
+		}
+		base[urlList[idx]] = baseScore;
+		idx++;
+	}
+
+
+	for (auto it : urlList) {
+		totalScore[it] = base[it];
+	}
+	idx = 0;
+
+	//3. 외부 링크 구하고, 점수 뿌려주기
+	for (auto page : pages) {
+		vector<string>& wordList = pageWordList[idx], outLinkList;
+		for (i = 0; i < wordList.size(); i++) {
+			if (wordList[i].size() > 5 && wordList[i].substr(0, 5) == "href=") { //href
+				if (wordList[i - 1].substr(wordList[i - 1].length() - 2, 2) != "<a") continue;
+				//"href="가 a 태그가 아닌 다른 태그에 들어있을 경우 패스
+				int idx = 6, urlLen = 1;
+				while (wordList[i][idx] != '"') {
+					idx++;
+					urlLen++;
+				}
+				string outLink = wordList[i].substr(5, urlLen + 1);
+				outLinkList.push_back(outLink);
+			}
+		}
+		double outScore = base[urlList[idx]] * 1.0 / outLinkList.size();
+
+		for (auto out : outLinkList) {
+			totalScore[out] += outScore;
+		}
+		idx++;
+	}
+
+	vector<pair<int, double>> rank;
+	for (i = 0; i < urlList.size(); i++) {
+		string url = urlList[i];
+		rank.emplace_back(i, totalScore[url]);
+	}
+
+	sort(rank.begin(), rank.end(), cmp);
+	int answer = rank[0].first;
+	return answer;
+}
