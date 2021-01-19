@@ -715,3 +715,15 @@ int main() {
 	}
 	cout << ret;
 }*/
+
+int main() {
+	int a, b, n, ret=0;
+	cin >> a >> b >> n;
+	a = a % b;
+	while (n--) {
+		a *= 10;
+		ret = a / b;
+		a %= b;
+	}
+	cout << ret;
+}
