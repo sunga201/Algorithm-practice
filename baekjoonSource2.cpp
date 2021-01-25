@@ -716,7 +716,7 @@ int main() {
 	cout << ret;
 }*/
 
-int main() {
+/*int main() { //1312 소수
 	int a, b, n, ret=0;
 	cin >> a >> b >> n;
 	a = a % b;
@@ -726,4 +726,218 @@ int main() {
 		a %= b;
 	}
 	cout << ret;
+}*/
+
+/*// 스타트링크 타워
+//0 ~ 9까지 번호를 표현할 때 켜지지 않는 전구의 인덱스를 미리 기록해놓는다.
+//인덱스는 row * 3 + col로 설정 ex) (2, 1) -> 7
+vector<int> vec[10] = { 
+	{4, 7, 10}, // 0
+	{0, 1, 3, 4, 6, 7, 9, 10, 12, 13}, //1
+	{3, 4, 10, 11}, //2
+	{3, 4, 9, 10}, //3
+	{1, 4, 9, 10, 12, 13}, //4
+	{4, 5, 9, 10}, //5
+	{4, 5, 10}, //6
+	{3, 4, 6, 7, 9, 10, 12, 13}, //7
+	{4, 10}, //8
+	{4, 9, 10} //9
+};
+
+vector<int> digit[9]; // 번호 안내판 각 자리에 나타날 수 있는 숫자들을 모아놓기 위한 배열
+int powList[9] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000 };
+char board[5][35];
+int main() {
+	int n, i, j, k;
+	long long sum = 0;
+	cin >> n;
+	for (i = 0; i < 5; i++) {
+		cin >> board[i];
+	}
+
+	for (i = 0; i < n; i++) { // 각 자릿수 확인
+		vector<int> light; // 현재 자리에서 켜져있는 전구의 인덱스를 저장하는 배열
+		for (j = 0; j < 5; j++) {
+			for (k = i * 4; k < i * 4 + 4; k++) {
+				if (board[j][k] == '#') { // 불이 켜져있는 경우
+					int idx = k - i * 4 + j * 3;
+					light.push_back(idx);
+				}
+			}
+		}
+
+		for (j = 0; j < 10; j++) {
+			int chk = 0;
+			for (auto noLight : vec[j]) {
+				for (auto pnt : light) {
+					if (noLight == pnt) { // 특정 숫자가 되기 위해서 꺼져있어야 하는 자리의 전구가 켜져있다면
+									      // 이 자리는 그 숫자가 들어갈 수 없다.
+						chk = 1;
+						break;
+					}
+				}
+				if (chk) break;
+			}
+			if (!chk) {
+				digit[i].push_back(j);
+			}
+		}
+	}
+
+	double mul = 1.0; //경우의 수 저장. 최대 1e9-1
+	for (i = 0; i < n; i++) {
+		mul *= digit[i].size(); 
+	}
+
+	if (mul == 0) { // 들어갈 수 있는 숫자 없음. -1 출력
+		cout << -1;
+		return 0;
+	}
+
+	// 각 자릿수의 총합은 그 자리에 올수있는 숫자의 합과, 그 숫자가 사용되는 모든 경우를 곱해서 구할 수 있다.
+	// 예를들어 100의 자리 4 / 10의 자리 0, 1, 3, 4, 7, 8, 9  / 1의자리 5를 구했을경우
+	// 100의 자리 합 : 4 * 나머지 자리 경우의 수 7 X 1 * 100 = 2800
+	// 10의 자리 합 : (0 + 1 + 3 + 4 + 7 + 8 + 9) * 나머지 자리 경우의 수 1 X 1 * 10 = 320
+	// 1의 자리 합 : 5 * 나머지 자리 경우의 수 1 X 7  * 1  = 35
+	// 세 값을 더하면 3155이고, 이를 모든 경우의 수 7로 나누면 약 450.7이라는 평균값을 구할 수 있다.
+	for (i = 0; i < n; i++) {
+		int tmp = 0;
+		for (auto num : digit[i]) tmp += num;
+		sum += tmp * (mul / digit[i].size()) * powList[n - i - 1];
+	}
+	cout << sum / mul << endl;
+}*/
+
+int arr[10] = { 1, 3, 4,5 ,2, 7, 10, 9, 8, 6 }, tmp[10];
+
+/*void qSort(int start, int end) { //qsort 1
+	if (start >= end) return;
+	int p = start, q = end, pivot = arr[(p + q) / 2];
+	while (p <= q) {
+		while (arr[p] < pivot && p<=end) p++;
+		while (arr[q] > pivot && q>=start) q--;
+		if (p <= q) {
+			swap(arr[p], arr[q]);
+			p++;
+			q--;
+		}
+	}
+	qSort(start, q);
+	qSort(p, end);
+}*/
+
+/*int partition(int start, int end) { //qsort 2
+	int p = start+1, q = end, pivot = arr[start];
+	while (p <= q) {
+		while (arr[p] < pivot && p <= end) p++;
+		while (arr[q] > pivot && q >= start) q--;
+		if (p <= q) {
+			swap(arr[p], arr[q]);
+			p++;
+			q--;
+		}
+	}
+	swap(arr[start], arr[q]);
+	return q;
 }
+
+void qSort(int start, int end) {
+	if (start >= end) return;
+	int p = partition(start, end);
+	qSort(start, p - 1);
+	qSort(p + 1, end);
+}*/
+
+/*void merge(int start, int mid, int end) { //merge sort
+	int p = start, q = mid+1, idx = start;
+	while (p <= mid && q <= end) {
+		if (arr[p] <= arr[q]) tmp[idx++] = arr[p++];
+		else tmp[idx++] = arr[q++];
+	}
+
+	while(p<=mid) tmp[idx++] = arr[p++];
+	while(q<=end) tmp[idx++] = arr[q++];
+
+	for (int i = start; i <= end; i++) {
+		arr[i] = tmp[i];
+	}
+}
+
+void mSort(int start, int end) {
+	if (start >= end) return;
+	int mid = start + end >> 1;
+	mSort(start, mid);
+	mSort(mid+1, end);
+	merge(start, mid, end);
+}*/
+
+/*int main() {
+	int i;
+	for (i = 0; i < 10; i++) {
+		cout << arr[i] << " ";
+	}
+	cout << endl;
+	qSort(0, 9);
+	for (i = 0; i < 10; i++) {
+		cout << arr[i] << " ";
+	}
+	cout << endl;
+}*/
+
+/*char board[50][50]; // 1051 숫자 정사각형
+int main() {
+	int i, j, k, n, m;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin >> board[i];
+	}
+
+	int len = min(n, m);
+	for (i = len - 1; i >= 1; i--) {
+		for (j = 0; j + i < n; j++) {
+			for (k = 0; k + i < m; k++) {
+				int a = board[j][k], b = board[j][k + i], c = board[j + i][k], d = board[j + i][k + i];
+				if (a == b && b == c && c == d) {
+					cout << (i+1)*(i+1);
+					return 0;
+				}
+			}
+		}
+	}
+	cout << 1;
+}*/
+
+/*int n, m;
+int adj[1001][1001], d, visited[1001];
+
+void dfs(int here, int obj, int dist) {
+	if (d != -1) return;
+	if (here == obj) {
+		d = dist;
+		return;
+	}
+	for (int i = 1; i <= n; i++) {
+		if (adj[here][i] && !visited[i]) {
+			visited[i] = 1;
+			dfs(i, obj, dist + adj[here][i]);
+		}
+	}
+}
+int main() {
+	int i, a, b, c;
+	cin >> n >> m;
+	for (i = 0; i < n - 1; i++) {
+		cin >> a >> b >> c;
+		adj[a][b] = c;
+		adj[b][a] = c;
+	}
+
+	for (i = 0; i < m; i++) {
+		memset(visited, 0, sizeof(visited));
+		d = -1;
+		cin >> a >> b;
+		visited[a] = 1;
+		dfs(a, b, 0);
+		cout << d <<"\n";
+	}
+}*/
