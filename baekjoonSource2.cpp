@@ -941,3 +941,35 @@ int main() {
 		cout << d <<"\n";
 	}
 }*/
+
+/*const int MAX = 1001; //13901 ·Îº¿
+int nxt[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} }, board[MAX][MAX], chk[MAX][MAX], dir[4];
+int main() {
+	int r, c, k, a, b, x, y, i, j;
+	cin >> r >> c >> k;
+	for (i = 0; i < k; i++) {
+		cin >> a >> b;
+		board[a][b] = 1;
+	}
+	cin >> x >> y;
+	chk[x][y] = 1;
+	for (i = 0; i < 4; i++) cin >> dir[i];
+	int idx = 0, stk = 0;
+	while (true) {
+		int d = dir[idx] - 1, nx = x + nxt[d][0], ny = y + nxt[d][1];
+		if (nx >= 0 && nx < r && ny >= 0 && ny < c && board[nx][ny] == 0 && chk[nx][ny] == 0) {
+			stk = 0;
+			while (nx >= 0 && nx < r && ny >= 0 && ny < c && board[nx][ny] == 0 && chk[nx][ny] == 0) {
+				chk[nx][ny] = 1;
+				nx += nxt[d][0], ny += nxt[d][1];
+			}
+
+			x = nx-nxt[d][0], y = ny-nxt[d][1];
+		}
+		else stk++;
+		if (stk == 4) break;
+		idx++;
+		if(idx==4) idx = 0;
+	}
+	cout << x << " " << y << "\n";
+}*/
