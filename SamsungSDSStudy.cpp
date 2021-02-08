@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <stack>
 #include <queue>
+#include <map>
 using namespace std;
 
 /* 1주차 */
@@ -96,8 +97,114 @@ int main() {
 	}
 }*/
 
+/*vector<char> vec(9); //1525 퍼즐
+map<vector<char>, bool> isVisited;
+queue<pair<vector<char>, int>> que;
+int nxt[4] = { -1, 1, -3, 3 };
 
+int main() {
+	int i, j;
+	for (i = 0; i < 9; i++) {
+		cin >> vec[i];
+	}
 
+	int inv = 0;
+	for (i = 0; i < 9; i++) {
+		if (vec[i] == '0') continue;
+		for (j = i+1; j < 9; j++) {
+			if (vec[j] != 0 && vec[i] < vec[j]) inv++;
+		}
+	}
+	if (inv % 2) cout << -1; // 이 퍼즐은 풀 수 없음.
+	else {
+		isVisited[vec] = true;
+		que.emplace(vec, 0);
+		while (!que.empty()) {
+			vector<char> now = que.front().first;
+			int mv = que.front().second;
+			que.pop();
+			for (i = 0; i < 8; i++) {
+				if (now[i] != i + 1 + '0') break;
+			}
+			if (i == 8) {
+				cout << mv;
+				return 0;
+			}
+			for (i = 0; i < 9; i++){
+				if (now[i] == '0') {
+					for (j = 0; j < 4; j++) {
+						int next = i + nxt[j];
+						if ((i%3==2 && next%3==0) || (i%3==0 && next%3==2) || next < 0 || next > 8) continue;
+						swap(now[i], now[next]);
+						if (!isVisited[now]) {
+							isVisited[now] = true;
+							que.emplace(now, mv+1);
+						}
+						swap(now[i], now[next]);
+					}
+				}
+			}
+		}
+	}
+}*/
+
+/* 4주차 */
+
+/*typedef struct pnt { // 10711 모래성
+	int x;
+	int y;
+}Pnt;
+
+queue<Pnt> que, nQue;
+char board[1000][1000];
+int numChk[1000][1000];
+int nxt[8][2] = { {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1} };
+int main() {
+	int i, j, k, h, w;
+	cin >> h >> w;
+	for (i = 0; i < h; i++) {
+		cin >> board[i];
+	}
+
+	for (i = 0; i < h; i++) {
+		for (j = 0; j < w; j++) {
+			if (board[i][j] == '.') continue;
+			for (k = 0; k < 8; k++) {
+				int nx = i + nxt[k][0], ny = j + nxt[k][1];
+				if (nx < 0 || nx >= h || ny < 0 || ny >= w) continue;
+				if (board[nx][ny] == '.') {
+					numChk[i][j]++;
+				}
+			}
+			if (numChk[i][j] >= board[i][j] - '0') {
+				numChk[i][j] = -1;
+				que.push({ i, j });
+			}
+		}
+	}
+
+	int ret = 0;
+	while (true) {
+		while (!que.empty()) {
+			int x = que.front().x, y = que.front().y;
+			que.pop();
+			for (i = 0; i < 8; i++) {
+				int nx = x + nxt[i][0], ny = y + nxt[i][1];
+				if (board[nx][ny] != '.' && numChk[nx][ny] != -1) {
+					numChk[nx][ny]++;
+					if (numChk[nx][ny] >= board[nx][ny] - '0') { // 새롭게 부서질 모래성
+						numChk[nx][ny] = -1;
+						nQue.push({ nx, ny });
+					}
+				}
+			}
+		}
+		ret++;
+		if (nQue.empty()) break;
+		swap(que, nQue);
+	}
+	cout << ret;
+}*/
 
 /* 13주차 */
 
