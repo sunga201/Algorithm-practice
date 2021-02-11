@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <sstream>
+#include <queue>
 using namespace std;
 
 /*int arr[502], sum[502]; //2019 KAKAO BLIND RECRUITMENT - 실패율
@@ -322,5 +323,139 @@ int solution(string word, vector<string> pages) {
 
 	sort(rank.begin(), rank.end(), cmp);
 	int answer = rank[0].first;
+	return answer;
+}*/
+
+// 2021 KAKAO BLIND RECRUITMENT
+/* string solution(string new_id) { // 1 - 신규 아이디 추천
+	int i, sz = new_id.length();
+	//1단계
+	for (i = 0; i < sz; i++) {
+		if (new_id[i] >= 'A' && new_id[i] <= 'Z') new_id[i] = new_id[i] - 'A' + 'a';
+	}
+
+	//2단계
+	string tmp = "";
+	for (i = 0; i < sz; i++) {
+		if (new_id[i] == '-' ||
+			new_id[i] == '_' ||
+			new_id[i] == '.' ||
+			(new_id[i] >= 'a' && new_id[i] <= 'z') ||
+			(new_id[i] >= '0' && new_id[i] <= '9'))
+			tmp += new_id[i];
+	}
+	new_id = tmp;
+
+	//3단계
+	sz = new_id.length();
+	int seq = 0;
+	for (i = 0; i < sz; i++) {
+		if (new_id[i] == '.') seq++;
+		else {
+			if (seq >= 2) {
+				new_id = new_id.substr(0, i - seq + 1) + new_id.substr(i);
+				sz = new_id.length();
+				i = i - seq;
+			}
+			seq = 0;
+		}
+	}
+	if (seq >= 2) {
+		new_id = new_id.substr(0, i - seq + 1) + new_id.substr(i);
+	}
+	seq = 0;
+	sz = new_id.length();
+
+	//4단계
+	if (new_id[0] == '.') {
+		new_id = new_id.substr(1);
+		sz--;
+	}
+	if (new_id[sz - 1] == '.') {
+		new_id = new_id.substr(0, sz - 1);
+		sz--;
+	}
+
+	//5단계
+	if (sz == 0) {
+		new_id = "a";
+		sz++;
+	}
+
+	//6단계
+	if (sz >= 16) {
+		if (new_id[14] == '.') {
+			new_id = new_id.substr(0, 14);
+			sz = 14;
+		}
+		else {
+			new_id = new_id.substr(0, 15);
+			sz = 15;
+		}
+	}
+
+	//7단계
+	if (sz <= 2) {
+		char ch = new_id[sz - 1];
+		while (sz != 3) {
+			new_id += ch;
+			sz++;
+		}
+	}
+	return new_id;
+}*/
+
+/*unordered_map<string, int> mp; // 2 - 메뉴 리뉴얼
+vector<string> vec;
+priority_queue<pair<int, string>> pQue[11];
+void dfs(int idx, int start, int num, string order, string str) {
+	if (idx == num) { // 다채움
+		if (mp.count(str)) { // 이 조합은 이미 저장되어 있음
+			mp[str]++;
+		}
+		else {
+			mp[str] = 1;
+			vec.push_back(str);
+		}
+		return;
+	}
+
+	for (int i = start; i < order.length(); i++) {
+		str[idx] = order[i];
+		dfs(idx + 1, i + 1, num, order, str);
+	}
+}
+
+vector<string> solution(vector<string> orders, vector<int> course) {
+	int i;
+	for (auto order : orders) {
+		sort(order.begin(), order.end());
+		for (auto num : course) {
+			if (order.length() >= num)
+				dfs(0, 0, num, order, string("", num));
+		}
+	}
+	vector<string> answer;
+	for (auto str : vec) {
+		if (mp[str] >= 2) pQue[str.length()].emplace(mp[str], str);
+	}
+
+	for (i = 0; i < 11; i++) {
+		if (!pQue[i].empty()) {
+			int num = pQue[i].top().first;
+			string s = pQue[i].top().second;
+			pQue[i].pop();
+			answer.push_back(s);
+			while (!pQue[i].empty()) {
+				int tmpNum = pQue[i].top().first;
+				if (num != tmpNum) break;
+				string tmpS = pQue[i].top().second;
+				pQue[i].pop();
+				answer.push_back(tmpS);
+			}
+		}
+	}
+
+	sort(answer.begin(), answer.end());
 	return answer;
 }*/
