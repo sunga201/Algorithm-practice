@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <unordered_map>
 #include <sstream>
 #include <queue>
@@ -457,5 +458,87 @@ vector<string> solution(vector<string> orders, vector<int> course) {
 	}
 
 	sort(answer.begin(), answer.end());
+	return answer;
+}*/
+
+/*unordered_map<string, vector<int>> mp; // 3 - 순위 검색
+unordered_map<string, int> isSorted;
+vector<string> vec; // query에서 and 제외한 단어들 넣기
+
+int func(int idx, string s) {
+	if (idx == 4) { // 점수 부분
+		int target = stoi(vec[idx]);
+		vector<int>& scoreList = mp[s];
+		int l = 0, r = scoreList.size(), mid;
+		if (!isSorted[s]) { // 이미 정렬 되어있는가?
+			sort(scoreList.begin(), scoreList.end());
+			isSorted[s] = 1;
+		}
+		while (l < r) {
+			mid = (l + r) >> 1;
+			if (scoreList[mid] < target) l = mid + 1;
+			else r = mid;
+		}
+		return scoreList.size() - l;
+	}
+
+	int ret = 0;
+	if (vec[idx] == "-") {
+		switch (idx) {
+		case 0:
+			ret += func(idx + 1, s + "java") +
+				func(idx + 1, s + "cpp") +
+				func(idx + 1, s + "python");
+			break;
+
+		case 1:
+			ret += func(idx + 1, s + "backend") +
+				func(idx + 1, s + "frontend");
+			break;
+
+		case 2:
+			ret += func(idx + 1, s + "junior") +
+				func(idx + 1, s + "senior");
+			break;
+
+		case 3:
+			ret += func(idx + 1, s + "chicken") +
+				func(idx + 1, s + "pizza");
+			break;
+		}
+	}
+	else {
+		ret += func(idx + 1, s + vec[idx]);
+	}
+	return ret;
+}
+
+vector<int> solution(vector<string> info, vector<string> query) {
+	int i;
+	vector<int> answer;
+	//info의 원소들을 tokenizer로 분리하고, 점수를 제외한 단어들을 붙여서 하나의 string으로 만들어 map의 키로 사용한다. 점수는 따로 빼서 int형으로 변환하고 map의 value에 있는 벡터에 push해서 나중에 이분탐색 수행
+	for (auto str : info) {
+		string tmp = "", token;
+		stringstream ss(str);
+		for (i = 0; i < 4; i++) {
+			ss >> token;
+			tmp += token;
+		}
+		ss >> token;
+		int score = stoi(token);
+		mp[tmp].push_back(score);
+	}
+
+	for (auto q : query) {
+		stringstream ss2(q);
+		string token2;
+		while (ss2 >> token2) {
+			if (token2 == "and") continue;
+			vec.push_back(token2);
+		}
+		answer.push_back(func(0, ""));
+		vec.clear();
+	}
+
 	return answer;
 }*/
