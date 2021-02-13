@@ -470,3 +470,24 @@ int main() {
 
 	cout << sum << "\n" << num << "\n";
 }*/
+
+/* 16ÁÖÂ÷ */
+int main() {
+	int i, n, l, num;
+	vector<int> hole;
+	cin >> n >> l;
+	for (i = 0; i < n; i++) {
+		cin >> num;
+		hole.push_back(num);
+	}
+	sort(hole.begin(), hole.end());
+	int ret = 0, idx = 0, cur=-1;
+	while (idx < hole.size()) {
+		if (cur == -1 || cur + l - 1<hole[idx]) {
+			ret++;
+			cur = hole[idx];
+		}
+		idx++;
+	}
+	cout << ret;
+}
