@@ -472,7 +472,7 @@ int main() {
 }*/
 
 /* 16주차 */
-int main() {
+/*int main() { // 1449 수리공 항승
 	int i, n, l, num;
 	vector<int> hole;
 	cin >> n >> l;
@@ -490,4 +490,30 @@ int main() {
 		idx++;
 	}
 	cout << ret;
+}*/
+
+/* 17주차 */
+int main() {
+	int i, n, score, p, t;
+	vector<int> vec;
+	cin >> n >> score >> p;
+
+	for (i = 0; i < n; i++) {
+		cin >> t;
+		vec.push_back(t);
+	}
+
+	sort(vec.begin(), vec.end());
+	reverse(vec.begin(), vec.end());
+	vec.resize(min(p, (int)vec.size()));
+	for (i = 0; i < vec.size(); i++) {
+		if (vec[i] <= score) {
+			if ((i!=p-1 && vec[i+1]==vec[i]) || (vec[i] == score && i == p - 1)) continue;
+			cout << i + 1;
+			return 0;
+		}
+	}
+
+	if (i >= p) cout << -1;
+	else cout << i + 1;
 }
