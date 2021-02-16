@@ -542,3 +542,98 @@ vector<int> solution(vector<string> info, vector<string> query) {
 
 	return answer;
 }*/
+
+/*const int INF = 1e9; // 4 - 합승 택시 요금
+int dist[201][201];
+int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
+	int i, j, k, answer = 0;
+
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= n; j++) dist[i][j] = INF;
+	}
+
+	for (auto fare : fares) {
+		dist[fare[0]][fare[1]] = fare[2];
+		dist[fare[1]][fare[0]] = fare[2];
+	}
+
+	for (k = 1; k <= n; k++) {
+		for (i = 1; i <= n; i++) {
+			for (j = 1; j <= n; j++) {
+				if (i != j && dist[i][j] >= dist[i][k] + dist[k][j])
+					dist[i][j] = dist[i][k] + dist[k][j];
+			}
+		}
+	}
+
+	for (i = 1; i <= n; i++) dist[i][i] = 0;
+
+	int noShare = dist[s][a] + dist[s][b], share = INF;
+	for (i = 1; i <= n; i++) {
+		if (dist[s][i] == INF || dist[i][a] == INF || dist[i][b] == INF) continue;
+		share = min(share, dist[s][i] + dist[i][a] + dist[i][b]);
+	}
+
+	return noShare > share ? share : noShare;
+}*/
+
+const int MAX = 360001;
+int secArr[MAX], preSum[MAX];
+
+int toInt(string time) {
+	int hour = stoi(time.substr(0, 2)) * 3600;
+	int minute = stoi(time.substr(3, 2)) * 60;
+	int second = stoi(time.substr(6, 2));
+	return hour + minute + second;
+}
+
+string toTime(int sec) {
+	string hour = to_string(sec / 3600);
+	if (sec / 3600 < 10) hour = "0" + hour;
+
+	string minute = to_string((sec % 3600) / 60);
+	if ((sec % 3600) / 60 < 10) minute = "0" + minute;
+
+	string second = to_string(sec % 60);
+	if (sec % 60 < 10) second = "0" + second;
+
+	return hour + ":" + minute + ":" + second;
+}
+
+string solution(string play_time, string adv_time, vector<string> logs) {
+	string answer = "";
+	int i, j;
+	int totLen = toInt(play_time), advLen = toInt(adv_time);
+	for (auto it : logs) {
+		string start = it.substr(0, 8), end = it.substr(9, 8);
+		int sTime = toInt(start), eTime = toInt(end);
+		secArr[sTime + 1]++;
+		secArr[eTime + 1]--;
+	}
+
+	preSum[0] = secArr[0];
+	for (i = 1; i <= totLen; i++) { // 매 초마다 겹치는 구간의 수 구하기
+		preSum[i] = secArr[i] + preSum[i - 1];
+	}
+
+	for (i = 1; i <= totLen; i++) { // prefix sum
+		preSum[i] += preSum[i - 1];
+	}
+
+	int maxa = 0;
+	for (i = 0; i + advLen <= totLen; i++) {
+		if (i == 0) {
+			if (maxa < preSum[advLen]) {
+				maxa = preSum[advLen];
+				answer = toTime(i);
+			}
+		}
+		else {
+			if (maxa < preSum[i + advLen] - preSum[i]) {
+				maxa = preSum[i + advLen] - preSum[i];
+				answer = toTime(i);
+			}
+		}
+	}
+	return answer;
+}
