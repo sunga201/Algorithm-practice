@@ -973,3 +973,19 @@ int main() {
 	}
 	cout << x << " " << y << "\n";
 }*/
+
+int lcm(int a, int b) {
+	if (b == 0) return a;
+	return lcm(b, a % b);
+}
+
+int main() {
+	int i, n, a, b;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> a >> b;
+		if (a < b) swap(a, b);
+		int gcd=lcm(a, b);
+		cout << a / gcd * b << "\n";
+	}
+}
