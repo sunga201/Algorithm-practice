@@ -493,7 +493,7 @@ int main() {
 }*/
 
 /* 17주차 */
-int main() {
+/*int main() { // 등수 구하기 (푸는중)
 	int i, n, score, p, t;
 	vector<int> vec;
 	cin >> n >> score >> p;
@@ -516,4 +516,4 @@ int main() {
 
 	if (i >= p) cout << -1;
 	else cout << i + 1;
-}
+}*/

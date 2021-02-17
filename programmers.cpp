@@ -577,8 +577,9 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares) {
 	return noShare > share ? share : noShare;
 }*/
 
+/*typedef long long ll; // 5 - 광고 삽입
 const int MAX = 360001;
-int secArr[MAX], preSum[MAX];
+ll preSum[MAX];
 
 int toInt(string time) {
 	int hour = stoi(time.substr(0, 2)) * 3600;
@@ -607,20 +608,19 @@ string solution(string play_time, string adv_time, vector<string> logs) {
 	for (auto it : logs) {
 		string start = it.substr(0, 8), end = it.substr(9, 8);
 		int sTime = toInt(start), eTime = toInt(end);
-		secArr[sTime + 1]++;
-		secArr[eTime + 1]--;
+		preSum[sTime + 1]++;
+		preSum[eTime + 1]--;
 	}
 
-	preSum[0] = secArr[0];
 	for (i = 1; i <= totLen; i++) { // 매 초마다 겹치는 구간의 수 구하기
-		preSum[i] = secArr[i] + preSum[i - 1];
+		preSum[i] = preSum[i] + preSum[i - 1];
 	}
 
 	for (i = 1; i <= totLen; i++) { // prefix sum
 		preSum[i] += preSum[i - 1];
 	}
 
-	int maxa = 0;
+	ll maxa = 0;
 	for (i = 0; i + advLen <= totLen; i++) {
 		if (i == 0) {
 			if (maxa < preSum[advLen]) {
@@ -636,4 +636,4 @@ string solution(string play_time, string adv_time, vector<string> logs) {
 		}
 	}
 	return answer;
-}
+}*/
