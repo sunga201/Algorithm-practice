@@ -974,7 +974,7 @@ int main() {
 	cout << x << " " << y << "\n";
 }*/
 
-int lcm(int a, int b) {
+/*int lcm(int a, int b) { //5347 LCM
 	if (b == 0) return a;
 	return lcm(b, a % b);
 }
@@ -988,4 +988,40 @@ int main() {
 		int gcd=lcm(a, b);
 		cout << a / gcd * b << "\n";
 	}
+}*/
+
+/* DP */
+
+const int MAX = 1e6 + 1, INF=1e9+7;
+int cache[MAX];
+
+int dp(string str) {
+	cout << "	str : " << str << endl;
+	if (str.length() == 1) {
+		return -1;
+	}
+	int i, j, len=str.length(), num = stoi(str);
+	int& ret = cache[num];
+	if (ret != INF) return ret;
+	bool vic = false;
+	for (i = 1; i < len; i++) {
+		for (j = 0; j + i <= len; j++) {
+			int sub = stoi(str.substr(j, i));
+			if (sub == 0) continue;
+			if (dp(to_string(num - sub)) == -1) { // ÀÌ±ט
+				vic = true;
+				ret = min(ret, sub);
+			}
+		}
+	}
+	if (vic == false) ret = -1;
+	return ret;
+}
+
+int main() {
+	string num;
+	cin >> num;
+	int i, j, len=num.length(), intNum=stoi(num);
+	for (i = 0; i < MAX; i++) cache[i] = INF;
+	cout << dp(num);
 }
