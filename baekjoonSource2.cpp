@@ -992,11 +992,10 @@ int main() {
 
 /* DP */
 
-const int MAX = 1e6 + 1, INF=1e9+7;
+/*const int MAX = 1e6 + 1, INF=1e9+7; // 1519 부분 문자열 뽑기 게임
 int cache[MAX];
 
 int dp(string str) {
-	cout << "	str : " << str << endl;
 	if (str.length() == 1) {
 		return -1;
 	}
@@ -1024,4 +1023,10 @@ int main() {
 	int i, j, len=num.length(), intNum=stoi(num);
 	for (i = 0; i < MAX; i++) cache[i] = INF;
 	cout << dp(num);
+}*/
+
+int main() {
+	long long n;
+	cin >> n;
+	cout << ((n % 2) ? "SK" : "CY");
 }
