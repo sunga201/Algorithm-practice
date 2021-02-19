@@ -1025,8 +1025,17 @@ int main() {
 	cout << dp(num);
 }*/
 
-int main() {
+/* 게임 이론 */
+/*int main() { // 9659 돌 게임 5
 	long long n;
 	cin >> n;
 	cout << ((n % 2) ? "SK" : "CY");
+}*/
+
+string a[7] = { "SK", "CY", "SK", "SK", "SK", "SK", "CY" };
+
+int main() {
+	long long n;
+	cin >> n;
+	cout << a[(n - 1) % 7];
 }
