@@ -808,9 +808,9 @@ int main() {
 	cout << sum / mul << endl;
 }*/
 
-int arr[10] = { 1, 3, 4,5 ,2, 7, 10, 9, 8, 6 }, tmp[10];
+/*int arr[10] = { 1, 3, 4,5 ,2, 7, 10, 9, 8, 6 }, tmp[10];
 
-/*void qSort(int start, int end) { //qsort 1
+void qSort(int start, int end) { //qsort 1
 	if (start >= end) return;
 	int p = start, q = end, pivot = arr[(p + q) / 2];
 	while (p <= q) {
@@ -992,11 +992,10 @@ int main() {
 
 /* DP */
 
-const int MAX = 1e6 + 1, INF=1e9+7;
+/*const int MAX = 1e6 + 1, INF=1e9+7; // 1519 부분 문자열 뽑기 게임
 int cache[MAX];
 
 int dp(string str) {
-	cout << "	str : " << str << endl;
 	if (str.length() == 1) {
 		return -1;
 	}
@@ -1024,4 +1023,26 @@ int main() {
 	int i, j, len=num.length(), intNum=stoi(num);
 	for (i = 0; i < MAX; i++) cache[i] = INF;
 	cout << dp(num);
+}*/
+
+/* 게임 이론 */
+/*int main() { // 9659 돌 게임 5
+	long long n;
+	cin >> n;
+	cout << ((n % 2) ? "SK" : "CY");
+}*/
+
+/*string a[7] = { "SK", "CY", "SK", "SK", "SK", "SK", "CY" }; // 9660 돌 게임 6
+
+int main() {
+	long long n;
+	cin >> n;
+	cout << a[(n - 1) % 7];
+}*/
+
+string arr[5] = { "CY", "SK", "CY", "SK", "SK" };
+int main() {
+	long long num;
+	cin >> num;
+	cout << arr[num % 5];
 }
