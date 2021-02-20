@@ -8,10 +8,12 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <set>
 #pragma warning(disable:4996)
 using namespace std;
 
 
+/* 2021/01/30 */
 
 /*const int INF = 1e9; // 16197 두 동전
 
@@ -182,4 +184,298 @@ int main() {
 	cout << mark - 1 << "\n";
 	cout << maxSize << "\n";
 	cout << maxSumSize << "\n";
+}*/
+
+/* 2021/02/06 */
+
+/*int w[100], v[100], cache[101][100001]; //12865 평범한 배낭
+int main() {
+	int i, j, n, k;
+	cin >> n >> k;
+	for (i = 1; i <= n; i++) {
+		cin >> w[i] >> v[i];
+	}
+
+	int ret = 0;
+
+	for (i = 1; i <= n; i++) {
+		for (j = 0; j <= k; j++) {
+			cache[i][j] = cache[i - 1][j];
+			if (j - w[i] >= 0) {
+				cache[i][j] = max(cache[i][j], cache[i - 1][j - w[i]] + v[i]);
+				ret = max(ret, cache[i][j]);
+			}
+		}
+	}
+
+	cout << ret;
+}*/
+
+/*int s2d2[11][11], soil[11][11], num, adj[8][2] = { {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1} }; // 16235 나무 재테크(아직 못풀었음)
+priority_queue<int> board[11][11]; // 각 나무의 나이 저장
+vector<int> dead[11][11];
+int main() {
+	int n, m, k, p, q, r, s, x, y, z;
+	cin >> n >> m >> k;
+	num = m; // 나무 갯수 저장
+	for (p = 1; p <= n; p++) {
+		for (q = 1; q <= n; q++) {
+			cin >> s2d2[p][q];
+			soil[p][q] = 5;
+		}
+	}
+
+	for (p = 0; p < m; p++) {
+		cin >> x >> y >> z;
+		board[x][y].push(z);
+	}
+
+	for (p = 0; p < k; p++) {
+		// 봄
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				vector<int> tmp;
+				while (!board[q][r].empty()) {
+					int tree = board[q][r].top();
+					board[q][r].pop();
+					if (soil[q][r] >= tree) { // 나무 생존
+						soil[q][r] -= tree;
+						tree++;
+						tmp.push_back(tree);
+					}
+					else { // 나무 사망
+						dead[q][r].push_back(tree);
+						num--;
+					}
+				}
+				for (auto it : tmp) {
+					board[q][r].push(it);
+				}
+			}
+		}
+		// 여름
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				for (auto it : dead[q][r]) {
+					soil[q][r] += it / 2;
+				}
+				dead[q][r].clear();
+			}
+		}
+
+		// 가을
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				vector<int> tmp2;
+				while (!board[q][r].empty()) {
+					int tree = board[q][r].top();
+					board[q][r].pop();
+					if (tree % 5 == 0) { // 번식
+						for (s = 0; s < 8; s++) {
+							int nxtQ = q + adj[s][0], nxtR = r + adj[s][1];
+							if (nxtQ<1 || nxtQ>n || nxtR<1 || nxtR>n) continue;
+							board[nxtQ][nxtR].push(1); // 새 나무 추가
+							num++; // 새 나무 추가
+						}
+					}
+					tmp2.push_back(tree);
+				}
+				for (auto it : tmp2) board[q][r].push(it);
+			}
+		}
+
+		//겨울
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				soil[q][r] += s2d2[q][r];
+			}
+		}
+	}
+
+	cout << num;
+}*/
+
+/*int s2d2[11][11], soil[11][11], num, adj[8][2] = { {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1} };
+vector<int> board[11][11]; // 각 나무의 나이 저장
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+	int n, m, k, p, q, r, s, x, y, z;
+	cin >> n >> m >> k;
+	num = m; // 나무 갯수 저장
+	for (p = 1; p <= n; p++) {
+		for (q = 1; q <= n; q++) {
+			cin >> s2d2[p][q];
+			soil[p][q] = 5;
+		}
+	}
+
+	for (p = 0; p < m; p++) {
+		cin >> x >> y >> z;
+		board[x][y].push_back(z);
+	}
+
+	for (p = 0; p < k; p++) {
+		// 봄
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				for (auto& tree : board[q][r]) {
+					if (tree < 0) continue;
+					if (soil[q][r] >= tree) { // 나무 생존
+						soil[q][r] -= tree;
+						tree++;
+					}
+					else { // 나무 사망
+						tree = -tree; // 여름에 처리하기 위해 음수만 붙임. 처리 끝나면 -999로 조정
+						num--;
+					}
+				}
+			}
+		}
+
+		// 여름
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				for (auto& tree : board[q][r]) {
+					if (tree < 0 && tree != -999) {
+						soil[q][r] += (-tree) / 2;
+						tree = -999;
+					}
+				}
+			}
+		}
+
+		// 가을
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				for (auto& tree : board[q][r]) {
+					if (tree % 5 == 0) { // 번식
+						for (s = 0; s < 8; s++) {
+							int nxtQ = q + adj[s][0], nxtR = r + adj[s][1];
+							if (nxtQ<1 || nxtQ>n || nxtR<1 || nxtR>n) continue;
+							board[nxtQ][nxtR].push_back(1); // 새 나무 추가
+							sort(board[nxtQ][nxtR].begin(), board[nxtQ][nxtR].end()); // 나이 어린 순으로 정렬
+							num++; // 새 나무 추가
+						}
+					}
+				}
+			}
+		}
+
+		//겨울
+		for (q = 1; q <= n; q++) {
+			for (r = 1; r <= n; r++) {
+				soil[q][r] += s2d2[q][r];
+			}
+		}
+	}
+
+	cout << num;
+}*/
+
+/* 2021/02/20 */
+
+const int MAX = 1000, NINF=-1e9; // 2169 로봇 조종하기
+int n, m;
+int board[MAX][MAX], cache[MAX][MAX][4]; //칸(x, y)로 오기 이전에 있던 칸의 위치 0 : 초기 위치(0, 0)일 때 1 : 왼쪽 2 : 아래 3 : 오른쪽 
+
+int nxt[3][2] = { {0, 1}, {1, 0},  {0, -1} };
+int dp(int x, int y, int prev) {
+	if (x == n - 1 && y == m - 1) {
+		return board[x][y];
+	}
+
+	int& ret = cache[x][y][prev + 1];
+	if (ret != -1) return ret;
+	ret = NINF;
+	for (int i = 0; i < 3; i++) {
+		int nx = x + nxt[i][0], ny = y + nxt[i][1];
+		if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+		if ((i == 0 && prev == 2) || (i == 2 && prev == 0)) continue;
+		ret = max(ret, board[x][y] + dp(nx, ny, i));
+	}
+
+	return ret;
+}
+int main() {
+	int i, j;
+	cin >> n >> m;
+	memset(cache, -1, sizeof(cache));
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < m; j++) {
+			cin >> board[i][j];
+		}
+	}
+
+	cout << dp(0, 0, -1);
+}
+
+/*int n; // 2023 신기한 소수
+
+bool isPrime(int num) {
+	if (num == 1) return false;
+	int i;
+	for (i = 2; i * i <= num; i++) {
+		if (num % i == 0) return false;
+	}
+	return true;
+}
+
+void dfs(int idx, int num) {
+	int i, j;
+	if (idx == n) {
+		if (isPrime(num)) cout << num << "\n";
+		return;
+	}
+	for (int i = 0; i < 10; i++) {
+		if (idx == 0 && i==0) continue;
+		if (!isPrime(num * 10 + i)) continue;
+		dfs(idx + 1, num * 10 + i);
+	}
+}
+int main() {
+	cin >> n;
+		
+	dfs(0, 0);
+}*/
+
+/*string str; // 1248 맞춰봐
+char board[10][10];
+int n, chk = 0;
+
+void dfs(int idx, vector<int> vec) {
+	if (chk) return; // 이미 수열을 출력했으면 바로 리턴
+	if (idx == n) { // 모든 조건 충족, 출력하고 chk 1로 변경 후 리턴
+		for (auto it : vec) {
+			cout << it << " ";
+		}
+		chk = 1;
+		return;
+	}
+	int i, j;
+	for (i = -10; i <= 10; i++) {
+		vec[idx] = i;
+		int sum = 0, chk=1;
+		for (j = idx; j >=0; j--) { // 조건 체크
+			sum += vec[j];
+			if ((board[j][idx] == '+' && sum <= 0) ||
+				(board[j][idx] == '-' && sum >= 0) ||
+				(board[j][idx] == '0' && sum != 0)) chk=0;
+		}
+		if(chk) dfs(idx + 1, vec);
+	}
+}
+
+int main() {
+	cin >> n >> str;
+	int i, j, idx = 0;
+
+	//배열 생성
+	for (i = 0; i < n; i++) {
+		for (j = i; j < n; j++) {
+			board[i][j] = str[idx++];
+		}
+	}
+
+	dfs(0, vector<int>(n));
 }*/
