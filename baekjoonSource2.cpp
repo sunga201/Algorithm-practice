@@ -1040,9 +1040,137 @@ int main() {
 	cout << a[(n - 1) % 7];
 }*/
 
-string arr[5] = { "CY", "SK", "CY", "SK", "SK" };
+/*string arr[5] = { "CY", "SK", "CY", "SK", "SK" }; // 9661 돌 게임 7
 int main() {
 	long long num;
 	cin >> num;
 	cout << arr[num % 5];
+}*/
+
+/*bool isPalindrome(string str) { // 팰린드롬 테스트
+	int i, len=str.length(), c=0, r=0;
+	string tmp = "";
+	for (i = 0; i < len; i++) {
+		tmp += '#';
+		tmp += str[i];
+	}
+	tmp += '#';
+	len = len * 2 + 1;
+	vector<int> pal(len, 0);
+	for (i = 0; i < len; i++) {
+		if (i <= r) {
+			pal[i] = min(r-i, pal[2 * c - i]);
+		}
+		else pal[i] = 0;
+		while (i + pal[i] + 1 < len && i - pal[i] - 1 >= 0 && tmp[i - pal[i] - 1] == tmp[i + pal[i] + 1]) {
+			pal[i]++;
+		}
+
+		if (r < i + pal[i]) {
+			r = i + pal[i];
+			c = i;
+		}
+	}
+
+	if (pal[len / 2] == len / 2) return true;
+	else return false;
+}
+
+int main() {
+	int i, j, t, k;
+	cin >> t;
+	while (t--) {
+		cin >> k;
+		string s;
+		vector<string> vec;
+		for (i = 0; i < k; i++) {
+			cin >> s;
+			vec.push_back(s);
+		}
+		int chk = 0;
+
+		for (i = 0; i < k; i++) {
+			for (j = 0; j < k; j++) {
+				if (i == j) continue;
+				string concat = vec[i] + vec[j];
+				if (isPalindrome(concat)) {
+					cout << concat << endl;
+					chk = 1;
+					break;
+				}
+			}
+			if (chk) break;
+		}
+		if (chk == 0) cout << "0\n";
+	}
+}*/
+
+int main() {
+	string k, s, com;
+	int n, i;
+	cin >> k >> s >> n;
+	int kx = 7 - (k[1] - '1'),
+		ky = k[0] - 'A',
+		sx = 7 - (s[1] - '1'),
+		sy = s[0] - 'A';
+
+	for (i = 0; i < n; i++) {
+		cin >> com;
+		if (com.length() == 1) {
+			switch (com[0]) {
+			case 'R':
+				if (ky == 7 || (kx == sx && ky + 1 == sy && sy == 7)) break;
+				ky++;
+				if (kx == sx && ky == sy) sy++;
+				break;
+
+			case 'L':
+				if (ky == 0 || (kx == sx && ky - 1 == sy && sy == 0)) break;
+				ky--;
+				if (kx == sx && ky == sy) sy--;
+				break;
+
+			case 'B':
+				if (kx == 7 || (ky == sy && kx + 1 == sx && sx == 7)) break;
+				kx++;
+				if (kx == sx && ky == sy) sx++;
+				break;
+
+			case 'T':
+				if (kx == 0 || (ky == sy && kx - 1 == sx && sx == 0)) break;
+				kx--;
+				if (kx == sx && ky == sy) sx--;
+				break;
+			}
+		}
+
+		else {
+			if (com == "RT") {
+				if (kx == 0 || ky == 7 || (ky + 1 == sy && kx - 1 == sx && (sy == 7 || sx == 0))) continue;
+				kx--, ky++;
+				if (kx == sx && ky == sy) sx--, sy++;
+			}
+
+			if (com == "LT") {
+				if (kx == 0 || ky == 0 || (ky - 1 == sy && kx - 1 == sx && (sy == 0 || sx == 0))) continue;
+				kx--, ky--;
+				if (kx == sx && ky == sy) sx--, sy--;
+			}
+
+			if (com == "RB") {
+				if (kx == 7 || ky == 7 || (ky + 1 == sy && kx + 1 == sx && (sy == 7 || sx == 7))) continue;
+				kx++, ky++;
+				if (kx == sx && ky == sy) sx--, sy++;
+			}
+
+			if (com == "LB") {
+				if (kx == 7 || ky == 0 || (ky - 1 == sy && kx + 1 == sx && (sy == 0 || sx == 7))) continue;
+				kx++, ky--;
+				if (kx == sx && ky == sy) sx++, sy--;
+			}
+		}
+	}
+
+	printf("%c%c\n", ky + 'A', 7 - kx + '1');
+	printf("%c%c\n", sy + 'A', 7 - sx + '1');
 }
