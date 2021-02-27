@@ -1160,7 +1160,7 @@ int main() {
 			if (com == "RB") {
 				if (kx == 7 || ky == 7 || (ky + 1 == sy && kx + 1 == sx && (sy == 7 || sx == 7))) continue;
 				kx++, ky++;
-				if (kx == sx && ky == sy) sx--, sy++;
+				if (kx == sx && ky == sy) sx++, sy++;
 			}
 
 			if (com == "LB") {
