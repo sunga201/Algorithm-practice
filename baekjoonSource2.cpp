@@ -1105,7 +1105,7 @@ int main() {
 	}
 }*/
 
-int main() {
+/*int main() { // 1063 킹
 	string k, s, com;
 	int n, i;
 	cin >> k >> s >> n;
@@ -1173,4 +1173,22 @@ int main() {
 
 	printf("%c%c\n", ky + 'A', 7 - kx + '1');
 	printf("%c%c\n", sy + 'A', 7 - sx + '1');
-}
+}*/
+
+/*int main() { //2018 수들의 합 5
+	int n, l=1, r=1, sum=1, ret=0;
+	cin >> n;
+	while (l <= n) {
+		if (sum < n) {
+			sum += ++r;
+		}
+		else if (sum > n) {
+			sum -= l++;
+		}
+		else {
+			ret++;
+			sum += ++r;
+		}
+	}
+	cout << ret;
+}*/
