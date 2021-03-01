@@ -1192,3 +1192,65 @@ int main() {
 	}
 	cout << ret;
 }*/
+
+char match[10][10];
+int chk[24];
+int smSquare[9][4] = { {0, 3, 4, 7}, {1, 4, 5, 8}, {2, 5, 6 ,9},
+					{7, 10, 11, 14}, {8, 11, 12, 15}, {9, 12, 13, 16},
+					{14, 17, 18, 21}, {15, 18, 19, 22}, {16, 19, 20, 23} },
+	midSquare[4][8] = { {0, 1, 3, 5, 10, 12, 14, 15}, {1, 2, 4, 6, 11, 13, 15, 16},
+					 {7, 8, 10, 12, 17, 19, 21, 22}, {8, 9, 11, 13, 18, 20, 22, 23} },
+	bigSquare[12] = { 0, 1, 2, 3, 6, 10, 13, 17, 20, 21, 22, 23 };
+
+int main() {
+	int i, j, idx=0, matchNum=0, sqNum=0;
+	for (i = 0; i < 10; i++) {
+		for (j = 0; j < 10; j++) {
+			cin >> match[i][j];
+		}
+	}
+
+	for (i = 0; i < 10; i += 3) {
+		for (j = 1; j < 10; j+=3) {
+			if (match[i][j] == '-') {
+				chk[idx] = 1;
+				matchNum++;
+			}
+			idx++;
+		}
+		
+		if (i != 9) {
+			for (j = 0; j < 10; j += 3) {
+				if (match[i + 1][j] == '|') {
+					chk[idx] = 1;
+					matchNum++;
+				}
+				idx++;
+			}
+		}
+	}
+
+	for (i = 0; i < 24; i++) {
+		cout << chk[i] << " ";
+	}
+	cout << endl;
+	for (i = 0; i < 9; i++) {
+		for (j = 0; j < 4; j++) {
+			if (!chk[smSquare[i][j]]) break;
+		}
+		if (j == 4) sqNum++;
+	}
+
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 8; j++) {
+			if (!chk[midSquare[i][j]]) break;
+		}
+		if (j == 8) sqNum++;
+	}
+
+	for (i = 0; i < 12; i++) {
+		if (!chk[bigSquare[i]]) break;
+	}
+	if (i == 12) sqNum++;
+	cout << 24 - matchNum << " " << sqNum;
+}
