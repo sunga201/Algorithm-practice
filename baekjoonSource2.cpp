@@ -1193,7 +1193,7 @@ int main() {
 	cout << ret;
 }*/
 
-char match[10][10];
+/*char match[10][10]; //2029 성냥
 int chk[24];
 int smSquare[9][4] = { {0, 3, 4, 7}, {1, 4, 5, 8}, {2, 5, 6 ,9},
 					{7, 10, 11, 14}, {8, 11, 12, 15}, {9, 12, 13, 16},
@@ -1230,10 +1230,6 @@ int main() {
 		}
 	}
 
-	for (i = 0; i < 24; i++) {
-		cout << chk[i] << " ";
-	}
-	cout << endl;
 	for (i = 0; i < 9; i++) {
 		for (j = 0; j < 4; j++) {
 			if (!chk[smSquare[i][j]]) break;
@@ -1253,4 +1249,17 @@ int main() {
 	}
 	if (i == 12) sqNum++;
 	cout << 24 - matchNum << " " << sqNum;
-}
+}*/
+
+/*int main() { //2506 점수 계산
+	int n, i, a, ret=0, stk=1;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> a;
+		if (a == 1) {
+			ret += stk++;
+		}
+		else stk = 1;
+	}
+	cout << ret;
+}*/
