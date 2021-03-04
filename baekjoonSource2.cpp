@@ -1263,3 +1263,26 @@ int main() {
 	}
 	cout << ret;
 }*/
+
+int num[5], arr[1000001];
+int main() {
+	int i;
+	for (i = 0; i < 5; i++) {
+		cin >> num[i];
+	}
+
+	for (i = 0; i < 5; i++) {
+		int tmp = num[i];
+		while (tmp <= 1000000) {
+			arr[tmp]++;
+			tmp += num[i];
+		}
+	}
+
+	for (i = 0; i <= 1000000; i++) {
+		if (arr[i] >= 3) {
+			cout << i;
+			return 0;
+		}
+	}
+}
