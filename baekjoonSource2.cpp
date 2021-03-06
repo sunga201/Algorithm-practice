@@ -1264,7 +1264,7 @@ int main() {
 	cout << ret;
 }*/
 
-int num[5], arr[1000001];
+/*int num[5], arr[1000001]; //1145 적어도 대부분의 배수
 int main() {
 	int i;
 	for (i = 0; i < 5; i++) {
@@ -1281,6 +1281,25 @@ int main() {
 
 	for (i = 0; i <= 1000000; i++) {
 		if (arr[i] >= 3) {
+			cout << i;
+			return 0;
+		}
+	}
+}*/
+
+bool chk(int num) {
+	while (num > 0) {
+		int k = num % 10;
+		if (k != 4 && k != 7) return false;
+		num /= 10;
+	}
+	return true;
+}
+int main() {
+	int i, n;
+	cin >> n;
+	for (i = n; i >= 4; i--) {
+		if (chk(i)) {
 			cout << i;
 			return 0;
 		}
