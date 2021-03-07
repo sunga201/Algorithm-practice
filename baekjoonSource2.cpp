@@ -1287,7 +1287,7 @@ int main() {
 	}
 }*/
 
-bool chk(int num) {
+/*bool chk(int num) { // 1526 가장 큰 금민수
 	while (num > 0) {
 		int k = num % 10;
 		if (k != 4 && k != 7) return false;
@@ -1304,4 +1304,20 @@ int main() {
 			return 0;
 		}
 	}
-}
+}*/
+
+/*int main() { //1871 좋은 자동차 번호판
+	int i, j, n;
+	string s;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cin >> s;
+		int a = 0, b = 0;
+		for (j = 0; j < 3; j++) {
+			a += (s[j] - 'A') * pow(26, 2-j);
+		}
+		b = stoi(s.substr(4, 4));
+		if (abs(a - b) <= 100) cout << "nice\n";
+		else cout << "not nice\n";
+	}
+}*/
