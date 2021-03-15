@@ -1321,3 +1321,34 @@ int main() {
 		else cout << "not nice\n";
 	}
 }*/
+
+/*int main() { // 1672 DNA ÇØµ¶
+	int n;
+	string s;
+	cin >> n >> s;
+	while (s.length() > 1) {
+		string tmp = s.substr(s.length() - 2);
+		if (tmp == "AA") tmp = "A";
+		if (tmp == "AG") tmp = "C";
+		if (tmp == "AC")tmp = "A";
+		if (tmp == "AT")tmp = "G";
+
+		if (tmp == "GA") tmp = "C";
+		if (tmp == "GG") tmp = "G";
+		if (tmp == "GC")tmp = "T";
+		if (tmp == "GT")tmp = "A";
+
+		if (tmp == "CA") tmp = "A";
+		if (tmp == "CG") tmp = "T";
+		if (tmp == "CC")tmp = "C";
+		if (tmp == "CT") tmp = "G";
+
+		if (tmp == "TA") tmp = "G";
+		if (tmp == "TG")tmp = "A";
+		if (tmp == "TC")tmp = "G";
+		if (tmp == "TT")tmp = "T";
+
+		s = s.substr(0, s.length() - 2) + tmp;
+	}
+	cout << s;
+}*/
