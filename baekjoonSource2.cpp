@@ -1322,7 +1322,7 @@ int main() {
 	}
 }*/
 
-/*int main() { // 1672 DNA 해독
+int main() { // 1672 DNA 해독
 	int n;
 	string s;
 	cin >> n >> s;
@@ -1351,4 +1351,4 @@ int main() {
 		s = s.substr(0, s.length() - 2) + tmp;
 	}
 	cout << s;
-}*/
+}
